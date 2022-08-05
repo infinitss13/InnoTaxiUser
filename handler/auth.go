@@ -28,7 +28,7 @@ func signUp(context *gin.Context) {
 		return
 
 	}
-	//var inputError = errors.New("user exists")
+	
 	id, err := dataBase.InsertUser(configs.NewConfig(), input)
 	if err != nil {
 		if errors.Is(err, dataBase.UserExistErr) {
