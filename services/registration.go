@@ -7,20 +7,16 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/infinitss13/InnoTaxiUser"
+	"github.com/infinitss13/InnoTaxiUser/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthenticationService struct {
-}
-
-func CreateUser(user *InnoTaxiUser.User) (*InnoTaxiUser.User, error) {
+func CreateUser(user *entity.User) (*entity.User, error) {
 	user.Password = GenerateHash(user)
-
 	return user, nil
 }
 
-func GenerateHash(user *InnoTaxiUser.User) string {
+func GenerateHash(user *entity.User) string {
 	saltedBytes := []byte(user.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {

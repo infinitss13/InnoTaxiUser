@@ -1,4 +1,4 @@
-package InnoTaxiUser
+package entity
 
 type User struct {
 	Id       int

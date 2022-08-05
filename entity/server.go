@@ -1,4 +1,4 @@
-package InnoTaxiUser
+package entity
 
 import "net/http"
 

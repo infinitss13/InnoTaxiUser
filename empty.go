@@ -1,1 +1,1 @@
-package InnoTaxiUser
+package entity
