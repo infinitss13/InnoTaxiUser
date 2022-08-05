@@ -17,7 +17,6 @@ type AuthenticationService struct {
 func CreateUser(user *InnoTaxiUser.User) (*InnoTaxiUser.User, error) {
 	user.Password = GenerateHash(user)
 
-	//method that will insert the structure User to the db
 	return user, nil
 }
 

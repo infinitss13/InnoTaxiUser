@@ -12,6 +12,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//InsertUser - function that will implement new user to the DB
 func InsertUser(user *InnoTaxiUser.User) (int, error) {
 	var envVariables = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		os.Getenv("HOST_DB"),
@@ -20,9 +21,9 @@ func InsertUser(user *InnoTaxiUser.User) (int, error) {
 		os.Getenv("DBNAME_DB"),
 		os.Getenv("PASSWORD_DB"),
 		os.Getenv("SSLMODE_DB"))
-	//fmt.Println(envVariables)
+
 	db, err := sqlx.Open("postgres", envVariables)
-	//db, err := sqlx.Connect("postgres", "username=postgres host=localhost port=5432 dbname=postgres sslmode=disable")
+
 	if err != nil {
 		return 0, err
 	}
@@ -47,6 +48,7 @@ func InsertUser(user *InnoTaxiUser.User) (int, error) {
 
 }
 
+//CheckUser - function check the user data in DB
 func CheckUser(userPhone, password string) error {
 	var envVariables = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		os.Getenv("HOST_DB"),
@@ -76,6 +78,7 @@ func CheckUser(userPhone, password string) error {
 	return nil
 }
 
+//UserExist - function check if the user already exists and can't sign-up
 func UserExist(user *InnoTaxiUser.User) (int, error) {
 	var envVariables = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		os.Getenv("HOST_DB"),
