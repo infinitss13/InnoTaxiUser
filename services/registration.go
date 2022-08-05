@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"log"
 	"os"
 	"time"
 
@@ -12,19 +11,22 @@ import (
 )
 
 func CreateUser(user *entity.User) (*entity.User, error) {
-	user.Password = GenerateHash(user)
+	password, err := GenerateHash(user)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = password
 	return user, nil
 }
 
-func GenerateHash(user *entity.User) string {
+func GenerateHash(user *entity.User) (string, error) {
 	saltedBytes := []byte(user.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
-		log.Println(err.Error())
-		return ""
+		return "", err
 	}
 	hashPassword := string(hashedBytes)
-	return hashPassword
+	return hashPassword, nil
 
 }
 func CheckPassword(password, passwordHash string) error {

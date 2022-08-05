@@ -1,7 +1,6 @@
 package dataBase
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -84,6 +83,6 @@ func UserExist(config *configs.DBConfig, user *entity.User) (int, error) {
 		return 0, nil
 	}
 
-	return id, errors.New("user exists")
+	return id, UserExistErr
 
 }

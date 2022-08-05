@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 
@@ -29,10 +28,10 @@ func signUp(context *gin.Context) {
 		return
 
 	}
-	var inputError = errors.New("user exists")
+	//var inputError = errors.New("user exists")
 	id, err := dataBase.InsertUser(configs.NewConfig(), input)
 	if err != nil {
-		if err.Error() == inputError.Error() {
+		if errors.Is(err, dataBase.UserExistErr) {
 			logrus.Error("status code: ", http.StatusBadRequest, err)
 			context.AbortWithStatusJSON(http.StatusBadRequest, "user with this data already exists")
 			return
@@ -54,16 +53,16 @@ func signIn(context *gin.Context) {
 	}{}
 
 	if err := context.BindJSON(&input); err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, "error input data")
+		context.AbortWithStatusJSON(http.StatusBadRequest, " error input data")
 		logrus.Error("status code: ", http.StatusBadRequest, " error input data")
 		return
 	}
 
 	err := dataBase.CheckUser(configs.NewConfig(), input.Phone, input.Password)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			context.AbortWithStatusJSON(http.StatusBadRequest, "user doesn't exist")
-			logrus.Error("status code: ", http.StatusBadRequest, "user doesn't exist")
+		if errors.Is(err, dataBase.UserNotFound) {
+			context.AbortWithStatusJSON(http.StatusBadRequest, " user doesn't exist")
+			logrus.Error("status code: ", http.StatusBadRequest, " user doesn't exist")
 			return
 		} else {
 			context.AbortWithStatusJSON(http.StatusInternalServerError, err)
