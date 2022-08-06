@@ -24,8 +24,10 @@ func signUp(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
+
 	db, err := dataBase.NewDB(configs.NewConfig())
 	id, err := db.InsertUser(input)
+
 	if err != nil {
 		HandleError(err, context)
 		return
