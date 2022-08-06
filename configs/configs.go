@@ -8,12 +8,12 @@ import (
 )
 
 type DBConfig struct {
-	hostDB     string
-	portDB     string
-	usernameDB string
-	nameDB     string
-	sslModeDB  string
-	passwordDB string
+	DBHost     string
+	DBPort     string
+	DBUsername string
+	DBName     string
+	DBSslmode  string
+	DBPassword string
 }
 
 type ServerConfig struct {
@@ -29,18 +29,19 @@ func NewServerConfig() *ServerConfig {
 func NewConfig() *DBConfig {
 	return &DBConfig{
 
-		hostDB:     os.Getenv("HOST_DB"),
-		portDB:     os.Getenv("PORT_DB"),
-		usernameDB: os.Getenv("USERNAME_DB"),
-		nameDB:     os.Getenv("DBNAME_DB"),
-		sslModeDB:  os.Getenv("SSLMODE_DB"),
-		passwordDB: os.Getenv("PASSWORD_DB"),
+		DBHost:     os.Getenv("HOST_DB"),
+		DBPort:     os.Getenv("PORT_DB"),
+		DBUsername: os.Getenv("USERNAME_DB"),
+		DBName:     os.Getenv("DBNAME_DB"),
+		DBSslmode:  os.Getenv("SSLMODE_DB"),
+		DBPassword: os.Getenv("PASSWORD_DB"),
 	}
+
 }
 
 func (c *DBConfig) ConnectionDbData() string {
 	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		c.hostDB, c.portDB, c.usernameDB, c.nameDB, c.passwordDB, c.sslModeDB)
+		c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
 }
 
 func (c *ServerConfig) SetTCPPort() string {

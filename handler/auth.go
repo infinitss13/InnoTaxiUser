@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,34 +15,23 @@ func signUp(context *gin.Context) {
 	input := new(entity.User)
 	err := context.BindJSON(&input)
 	if err != nil {
-		logrus.Error("status code: ", http.StatusBadRequest, err)
-		context.AbortWithStatusJSON(http.StatusBadRequest, "error input data")
+		HandleError(err, context)
 		return
 	}
 
 	input, err = services.CreateUser(input)
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusInternalServerError, "error creating user")
-		logrus.Error("status code: ", http.StatusBadRequest, err)
+		HandleError(err, context)
 		return
-
 	}
-	//var inputError = errors.New("user exists")
-	id, err := dataBase.InsertUser(configs.NewConfig(), input)
+	db, err := dataBase.NewDB(configs.NewConfig())
+	id, err := db.InsertUser(input)
 	if err != nil {
-		if errors.Is(err, dataBase.UserExistErr) {
-			logrus.Error("status code: ", http.StatusBadRequest, err)
-			context.AbortWithStatusJSON(http.StatusBadRequest, "user with this data already exists")
-			return
-		} else {
-			context.AbortWithStatusJSON(http.StatusInternalServerError, "error creating user")
-			logrus.Error("status code: ", http.StatusInternalServerError, err)
-			return
-		}
+		HandleError(err, context)
+		return
 	}
 	context.JSON(http.StatusOK, id)
 	logrus.Info("status code: ", http.StatusOK, " User is created")
-
 }
 
 func signIn(context *gin.Context) {
@@ -53,28 +41,22 @@ func signIn(context *gin.Context) {
 	}{}
 
 	if err := context.BindJSON(&input); err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, " error input data")
-		logrus.Error("status code: ", http.StatusBadRequest, " error input data")
+		ErrorBinding(err, context)
 		return
 	}
-
-	err := dataBase.CheckUser(configs.NewConfig(), input.Phone, input.Password)
+	db, err := dataBase.NewDB(configs.NewConfig())
 	if err != nil {
-		if errors.Is(err, dataBase.UserNotFound) {
-			context.AbortWithStatusJSON(http.StatusBadRequest, " user doesn't exist")
-			logrus.Error("status code: ", http.StatusBadRequest, " user doesn't exist")
-			return
-		} else {
-			context.AbortWithStatusJSON(http.StatusInternalServerError, err)
-			logrus.Error("status code: ", http.StatusInternalServerError, err)
-			return
-		}
+		HandleError(err, context)
+		return
 	}
-
+	err = db.UserIsRegistered(input.Phone, input.Password)
+	if err != nil {
+		HandleError(err, context)
+		return
+	}
 	token, err := services.CreateToken(input.Phone)
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusInternalServerError, err)
-		logrus.Error("status code: ", http.StatusInternalServerError, err)
+		HandleError(err, context)
 		return
 	}
 	context.JSON(http.StatusOK, map[string]interface{}{

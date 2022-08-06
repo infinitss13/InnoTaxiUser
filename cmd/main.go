@@ -14,6 +14,7 @@ func main() {
 		logrus.Fatal("error in loading env file")
 	}
 	serverConfig := configs.NewServerConfig()
+
 	port := serverConfig.SetTCPPort()
 	server := new(entity.Server)
 	err := server.Run(port, handler.SetRequestHandlers())
