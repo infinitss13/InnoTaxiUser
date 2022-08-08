@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/InnoTaxiUser/configs"
@@ -64,6 +65,7 @@ func signIn(context *gin.Context) {
 	context.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Hello",
 		"token":   token,
+		"time":    time.Now(),
 	})
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 

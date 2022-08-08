@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/infinitss13/InnoTaxiUser/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,10 @@ func SetRequestHandlers() *gin.Engine {
 	{
 		auth.POST("/sign-up", signUp)
 		auth.POST("/sign-in", signIn)
+	}
+	api := router.Group("/api").Use(middleware.Auth())
+	{
+		api.GET("/ping", GetRating)
 	}
 	return router
 }
