@@ -1,6 +1,8 @@
 package dataBase
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (dataBase *DB) GetRatingByPhone(userPhone string) (float32, error) {
 	query := fmt.Sprintf("SELECT rating from %s WHERE phone=$1", "users")
@@ -9,6 +11,5 @@ func (dataBase *DB) GetRatingByPhone(userPhone string) (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return rating, nil
 }

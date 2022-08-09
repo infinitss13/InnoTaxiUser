@@ -27,7 +27,7 @@ func (dataBase *DB) InsertUser(user *entity.User) (int, error) {
 
 }
 
-//CheckUser - function check the user data in DB
+//UserIsRegistered - function check the user data in DB
 func (dataBase *DB) UserIsRegistered(userPhone, password string) error {
 
 	query := fmt.Sprintf("SELECT password_hash FROM users WHERE phone=$1")

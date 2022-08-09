@@ -20,7 +20,9 @@ func SetRequestHandlers() *gin.Engine {
 	}
 	api := router.Group("/api").Use(middleware.Auth())
 	{
-		api.GET("/ping", GetRating)
+		api.GET("/rating", getRating)
+		api.POST("/order", orderTaxi)
+		api.POST("/rateTrip", rateTrip)
 	}
 	return router
 }

@@ -4,14 +4,15 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/InnoTaxiUser/services"
+	"net/http"
 	"strings"
 )
 
-func GetToken(ctx *gin.Context) (string, error) {
-	tokenString := ctx.GetHeader("Authorization")
+func GetToken(context *gin.Context) (string, error) {
+	tokenString := context.GetHeader("Authorization")
 	if tokenString == "" {
-		ctx.JSON(401, gin.H{"error": "request does not contain an access token"})
-		ctx.Abort()
+		context.JSON(401, gin.H{"error": "request does not contain an access token"})
+		context.Abort()
 		return "", errors.New("no access token")
 	}
 	splitedToken := strings.Split(tokenString, " ")
@@ -23,11 +24,8 @@ func Auth() gin.HandlerFunc {
 		splitedToken, err := GetToken(context)
 		_, err = services.VerifyToken(splitedToken)
 		if err != nil {
-			context.JSON(401, gin.H{"error": err.Error()})
-			context.Abort()
+			context.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
 		}
-		//context.JSON(http.StatusOK, phone)
-
 	}
 }

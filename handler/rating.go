@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func GetRating(context *gin.Context) {
+func getRating(context *gin.Context) {
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		HandleError(err, context)
@@ -35,5 +35,20 @@ func GetRating(context *gin.Context) {
 		"phone":  userPhone,
 		"rating": rating,
 	})
+
+}
+
+type ratingTrip struct {
+	Rating int `json:"rating"`
+}
+
+func rateTrip(context *gin.Context) {
+	inputRating := new(ratingTrip)
+	err := context.BindJSON(&inputRating)
+	if err != nil {
+		ErrorBinding(context)
+		return
+	}
+	//here will me method that address to order service`s database and insert rating to the last trip of user, if time is not expired
 
 }

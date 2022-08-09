@@ -44,7 +44,7 @@ func signIn(context *gin.Context) {
 	}{}
 
 	if err := context.BindJSON(&input); err != nil {
-		ErrorBinding(err, context)
+		ErrorBinding(context)
 		return
 	}
 	db, err := dataBase.NewDB(configs.NewConfig())

@@ -72,6 +72,5 @@ func VerifyToken(tokenSigned string) (SignInData, error) {
 		return signInData, errors.New("token expired")
 	}
 	signInData.Phone = claims.Phone
-
 	return signInData, nil
 }
