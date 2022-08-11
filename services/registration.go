@@ -2,11 +2,12 @@ package services
 
 import (
 	"errors"
+	"os"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/infinitss13/InnoTaxiUser/entity"
 	"golang.org/x/crypto/bcrypt"
-	"os"
-	"time"
 )
 
 type SignInData struct {

@@ -16,6 +16,16 @@ type DBConfig struct {
 	DBPassword string
 }
 
+type ConnectionMongo struct {
+	MongoHost       string
+	MongoPort       string
+	MongoUsername   string
+	MongoPassword   string
+	MongoDBName     string
+	MongoAuth       string
+	MongoCollection string
+}
+
 type ServerConfig struct {
 	tcpPort string
 }
@@ -26,8 +36,8 @@ func NewServerConfig() *ServerConfig {
 	}
 }
 
-func NewConfig() *DBConfig {
-	return &DBConfig{
+func NewConfig() DBConfig {
+	return DBConfig{
 
 		DBHost:     os.Getenv("HOST_DB"),
 		DBPort:     os.Getenv("PORT_DB"),
@@ -37,6 +47,17 @@ func NewConfig() *DBConfig {
 		DBPassword: os.Getenv("PASSWORD_DB"),
 	}
 
+}
+func NewConnectionMongo() ConnectionMongo {
+	return ConnectionMongo{
+		MongoHost:       os.Getenv("HOST_MONGO"),
+		MongoPort:       os.Getenv("PORT_MONGO"),
+		MongoUsername:   os.Getenv("USERNAME_MONGO"),
+		MongoPassword:   os.Getenv("PASSWORD_MONGO"),
+		MongoDBName:     os.Getenv("DBNAME_MONGO"),
+		MongoAuth:       os.Getenv("AUTH_MONGO"),
+		MongoCollection: os.Getenv("COLLECTION_MONGO"),
+	}
 }
 
 func (c *DBConfig) ConnectionDbData() string {

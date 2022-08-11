@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/services"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/infinitss13/InnoTaxiUser/services"
 )
 
 func GetToken(context *gin.Context) (string, error) {

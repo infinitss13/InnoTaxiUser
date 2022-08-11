@@ -10,7 +10,7 @@ import (
 )
 
 //InsertUser - function that will implement new user to the DB
-func (dataBase *DB) InsertUser(user *entity.User) (int, error) {
+func (dataBase *DB) InsertUser(user entity.User) (int, error) {
 	id, err := dataBase.UserExist(user)
 	if id != 0 {
 		return 0, err
@@ -44,7 +44,7 @@ func (dataBase *DB) UserIsRegistered(userPhone, password string) error {
 }
 
 //UserExist - function check if the user already exists and can't sign up
-func (dataBase *DB) UserExist(user *entity.User) (int, error) {
+func (dataBase *DB) UserExist(user entity.User) (int, error) {
 	query := fmt.Sprintf("SELECT id FROM users WHERE phone=$1 OR email=$2")
 	var id int
 	err := dataBase.db.Get(&id, query, user.Phone, user.Email)

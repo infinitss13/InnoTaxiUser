@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/InnoTaxiUser/dataBase"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func HandleError(err error, context *gin.Context) {

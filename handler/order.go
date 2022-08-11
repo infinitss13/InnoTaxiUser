@@ -25,5 +25,5 @@ func orderTaxi(context *gin.Context) {
 		return
 	}
 
-	//Here should be method that will address the Order service
+	//TODO : Here should be method that will address the Order service
 }

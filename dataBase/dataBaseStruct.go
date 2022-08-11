@@ -9,7 +9,7 @@ type DB struct {
 	db *sqlx.DB
 }
 
-func NewDB(config *configs.DBConfig) (*DB, error) {
+func NewDB(config configs.DBConfig) (*DB, error) {
 	dataBase, err := sqlx.Open("postgres", config.ConnectionDbData())
 	if err != nil {
 		return nil, err

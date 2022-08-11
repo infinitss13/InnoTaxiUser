@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/infinitss13/InnoTaxiUser/middleware"
 	"net/http"
+
+	"github.com/infinitss13/InnoTaxiUser/middleware"
 
 	"github.com/gin-gonic/gin"
 )
