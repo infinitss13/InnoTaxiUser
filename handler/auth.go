@@ -99,7 +99,6 @@ func signIn(context *gin.Context) {
 		"time":    time.Now(),
 	})
 	dbMongo.AddNewLog(context, input.Phone, nil, "")
-	HandleError(err, context)
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 
 }
