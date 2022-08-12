@@ -2,6 +2,7 @@ package configs
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -38,7 +39,6 @@ func NewServerConfig() *ServerConfig {
 
 func NewConfig() DBConfig {
 	return DBConfig{
-
 		DBHost:     os.Getenv("HOST_DB"),
 		DBPort:     os.Getenv("PORT_DB"),
 		DBUsername: os.Getenv("USERNAME_DB"),
@@ -49,14 +49,26 @@ func NewConfig() DBConfig {
 
 }
 func NewConnectionMongo() ConnectionMongo {
-	return ConnectionMongo{
-		MongoHost:       os.Getenv("HOST_MONGO"),
-		MongoPort:       os.Getenv("PORT_MONGO"),
-		MongoUsername:   os.Getenv("USERNAME_MONGO"),
-		MongoPassword:   os.Getenv("PASSWORD_MONGO"),
-		MongoDBName:     os.Getenv("DBNAME_MONGO"),
-		MongoAuth:       os.Getenv("AUTH_MONGO"),
-		MongoCollection: os.Getenv("COLLECTION_MONGO"),
+	if err := godotenv.Load(); err != nil {
+		return ConnectionMongo{
+			MongoHost:       "127.0.0.1",
+			MongoPort:       "27017",
+			MongoUsername:   "username",
+			MongoPassword:   "password",
+			MongoDBName:     "projectdb",
+			MongoAuth:       "projectdb",
+			MongoCollection: "logging",
+		}
+	} else {
+		return ConnectionMongo{
+			MongoHost:       os.Getenv("HOST_MONGO"),
+			MongoPort:       os.Getenv("PORT_MONGO"),
+			MongoUsername:   os.Getenv("USERNAME_MONGO"),
+			MongoPassword:   os.Getenv("PASSWORD_MONGO"),
+			MongoDBName:     os.Getenv("DBNAME_MONGO"),
+			MongoAuth:       os.Getenv("AUTH_MONGO"),
+			MongoCollection: os.Getenv("COLLECTION_MONGO"),
+		}
 	}
 }
 

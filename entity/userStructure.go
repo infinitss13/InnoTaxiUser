@@ -8,3 +8,8 @@ type User struct {
 	Password string `json:"password" binding:"required"`
 	Rating   string `json:"rating"`
 }
+
+type InputSignIn struct {
+	Phone    string `json:"phone" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}

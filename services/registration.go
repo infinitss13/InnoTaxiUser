@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/infinitss13/InnoTaxiUser/dataBase"
 	"os"
 	"time"
 
@@ -13,18 +14,29 @@ import (
 type SignInData struct {
 	Phone string `json:"phone"`
 	Email string `json:"email"`
+	Db    *dataBase.DB
 }
 
-func CreateUser(user *entity.User) (*entity.User, error) {
+func (sn *SignInData) CreateUser(user entity.User) (int, error) {
 	password, err := GenerateHash(user)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
+
 	user.Password = password
-	return user, nil
+	isExist := sn.Db.UserExist(user)
+	if isExist != false {
+		return 0, errors.New("user already exist")
+	}
+	id, err := sn.Db.InsertUser(user)
+	if err != nil {
+		return 0, errors.New("error insert database")
+	}
+
+	return id, nil
 }
 
-func GenerateHash(user *entity.User) (string, error) {
+func GenerateHash(user entity.User) (string, error) {
 	saltedBytes := []byte(user.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
@@ -74,4 +86,19 @@ func VerifyToken(tokenSigned string) (SignInData, error) {
 	}
 	signInData.Phone = claims.Phone
 	return signInData, nil
+}
+
+func (sn *SignInData) SignInUser(inputSignIn entity.InputSignIn) (string, error) {
+	passwordHash, err := sn.Db.UserIsRegistered(inputSignIn.Phone)
+	if err != nil {
+		return "", err
+	}
+	if err = CheckPassword(inputSignIn.Password, passwordHash); err != nil {
+		return "", err
+	}
+	token, err := CreateToken(inputSignIn.Phone)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
