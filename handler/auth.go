@@ -19,7 +19,7 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 		return
 	}
 
-	id, err := handler.signInstruct.CreateUser(*input)
+	id, err := handler.service.CreateUser(*input)
 	if err != nil {
 		errorCreate := fmt.Errorf("sign-up error, %v", err)
 		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorCreate, "some problems")
@@ -43,7 +43,7 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 		ErrorBinding(context)
 		return
 	}
-	token, err := handler.signInstruct.SignInUser(*input)
+	token, err := handler.service.SignInUser(*input)
 	if err != nil {
 		errorSignIn := fmt.Errorf("sign-in error : %v", err)
 		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorSignIn, "some problems")

@@ -11,24 +11,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type SignInData struct {
-	Phone string `json:"phone"`
-	Email string `json:"email"`
-	Db    *dataBase.DB
+type Service struct {
+	Db *dataBase.DB
 }
 
-func (sn *SignInData) CreateUser(user entity.User) (int, error) {
+func (srv *Service) CreateUser(user entity.User) (int, error) {
 	password, err := GenerateHash(user)
 	if err != nil {
 		return 0, err
 	}
 
 	user.Password = password
-	isExist := sn.Db.UserExist(user)
+	isExist := srv.Db.UserExist(user)
 	if isExist != false {
 		return 0, dataBase.UserExistErr
 	}
-	id, err := sn.Db.InsertUser(user)
+	id, err := srv.Db.InsertUser(user)
 	if err != nil {
 		return 0, errors.New("error insert database")
 	}
@@ -71,9 +69,9 @@ func CreateToken(phone string) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenSigned string) (SignInData, error) {
+func VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
 
-	signInData := SignInData{}
+	signInData := entity.InputSignIn{}
 	token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("ACCESS_KEY")), nil
 	})
@@ -88,8 +86,8 @@ func VerifyToken(tokenSigned string) (SignInData, error) {
 	return signInData, nil
 }
 
-func (sn *SignInData) SignInUser(inputSignIn entity.InputSignIn) (string, error) {
-	passwordHash, err := sn.Db.UserIsRegistered(inputSignIn.Phone)
+func (srv *Service) SignInUser(inputSignIn entity.InputSignIn) (string, error) {
+	passwordHash, err := srv.Db.UserIsRegistered(inputSignIn.Phone)
 	if err != nil {
 		return "", err
 	}

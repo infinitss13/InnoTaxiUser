@@ -12,8 +12,8 @@ import (
 )
 
 type AuthHandlers struct {
-	loggerMongo  logger.LoggerMongo
-	signInstruct *services.SignInData
+	loggerMongo logger.LoggerMongo
+	service     *services.Service
 }
 
 func NewAuthHandlers() *AuthHandlers {
@@ -21,15 +21,12 @@ func NewAuthHandlers() *AuthHandlers {
 	if err != nil {
 		return nil
 	}
-	if err != nil {
-		return nil
-	}
-	sn := new(services.SignInData)
-	sn.Db, err = dataBase.NewDB(configs.NewConfig())
+	srv := new(services.Service)
+	srv.Db, err = dataBase.NewDB(configs.NewConfig())
 
 	return &AuthHandlers{
-		loggerMongo:  logger.NewLogger(mongoDBClient),
-		signInstruct: sn,
+		loggerMongo: logger.NewLogger(mongoDBClient),
+		service:     srv,
 	}
 }
 

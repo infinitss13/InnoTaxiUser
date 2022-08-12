@@ -17,7 +17,7 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
-	rating, userPhone, err := handler.signInstruct.GetRatingWithToken(tokenSigned)
+	rating, userPhone, err := handler.service.GetRatingWithToken(tokenSigned)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
 		handler.loggerMongo.AddNewErrorLog(context, userPhone, errorRating, "some problems")
