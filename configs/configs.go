@@ -20,10 +20,7 @@ type DBConfig struct {
 type ConnectionMongo struct {
 	MongoHost       string
 	MongoPort       string
-	MongoUsername   string
-	MongoPassword   string
 	MongoDBName     string
-	MongoAuth       string
 	MongoCollection string
 }
 
@@ -53,20 +50,14 @@ func NewConnectionMongo() ConnectionMongo {
 		return ConnectionMongo{
 			MongoHost:       "127.0.0.1",
 			MongoPort:       "27017",
-			MongoUsername:   "username",
-			MongoPassword:   "password",
 			MongoDBName:     "projectdb",
-			MongoAuth:       "projectdb",
 			MongoCollection: "logging",
 		}
 	} else {
 		return ConnectionMongo{
 			MongoHost:       os.Getenv("HOST_MONGO"),
 			MongoPort:       os.Getenv("PORT_MONGO"),
-			MongoUsername:   os.Getenv("USERNAME_MONGO"),
-			MongoPassword:   os.Getenv("PASSWORD_MONGO"),
 			MongoDBName:     os.Getenv("DBNAME_MONGO"),
-			MongoAuth:       os.Getenv("AUTH_MONGO"),
 			MongoCollection: os.Getenv("COLLECTION_MONGO"),
 		}
 	}

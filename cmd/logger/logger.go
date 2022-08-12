@@ -90,26 +90,12 @@ func (d LoggerMongo) AddNewInfoLog(ctx *gin.Context, userPhone string, comments 
 
 func NewClientMongo() (db *mongo.Database, err error) {
 	var mongoDBURL string
-	var isAuth bool
 	newConnection := configs.NewConnectionMongo()
-	if newConnection.MongoUsername == "" && newConnection.MongoPassword == "" {
-		mongoDBURL = fmt.Sprintf("mongodb://%s:%s", newConnection.MongoHost, newConnection.MongoPort)
-	} else {
-		isAuth = true
-		mongoDBURL = fmt.Sprintf("mongodb://%s:%s@%s:%s",
-			newConnection.MongoUsername, newConnection.MongoPassword, newConnection.MongoHost, newConnection.MongoPort)
-	}
+
+	mongoDBURL = fmt.Sprintf("mongodb://%s:%s", newConnection.MongoHost, newConnection.MongoPort)
+
 	clientOptions := options.Client().ApplyURI(mongoDBURL)
-	if isAuth {
-		if newConnection.MongoAuth == "" {
-			newConnection.MongoAuth = newConnection.MongoDBName
-		}
-		clientOptions.SetAuth(options.Credential{
-			AuthSource: newConnection.MongoAuth,
-			Username:   newConnection.MongoUsername,
-			Password:   newConnection.MongoPassword,
-		})
-	}
+
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to mongoDB : %v", err)

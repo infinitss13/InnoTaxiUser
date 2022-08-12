@@ -20,7 +20,7 @@ func HandleError(err error, context *gin.Context) {
 		return
 
 	default:
-		context.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		logrus.Error("status code: ", http.StatusInternalServerError, " ", err)
 	}
 

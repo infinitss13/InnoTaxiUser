@@ -26,7 +26,7 @@ func (sn *SignInData) CreateUser(user entity.User) (int, error) {
 	user.Password = password
 	isExist := sn.Db.UserExist(user)
 	if isExist != false {
-		return 0, errors.New("user already exist")
+		return 0, dataBase.UserExistErr
 	}
 	id, err := sn.Db.InsertUser(user)
 	if err != nil {
