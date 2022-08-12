@@ -11,7 +11,7 @@ import (
 func main() {
 	logrus.Info("Starting application")
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error in loading env file : %v", err)
+		logrus.Errorf("error in loading env file : %v", err)
 	}
 	serverConfig := configs.NewServerConfig()
 

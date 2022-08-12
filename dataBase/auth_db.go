@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/infinitss13/InnoTaxiUser/entity"
-
 	_ "github.com/lib/pq"
 )
 
@@ -21,7 +20,7 @@ func (dataBase *DB) InsertUser(user entity.User) (int, error) {
 
 }
 
-//UserIsRegistered - function check the user data in DB
+//UserIsRegistered - function check the user in DB by phone number
 func (dataBase *DB) UserIsRegistered(userPhone string) (string, error) {
 	query := "SELECT password_hash FROM users WHERE phone=$1"
 	var passwordHash string

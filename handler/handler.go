@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"github.com/infinitss13/InnoTaxiUser/cmd/logger"
-	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
-	"github.com/infinitss13/InnoTaxiUser/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/infinitss13/InnoTaxiUser/cmd/logger"
+	"github.com/infinitss13/InnoTaxiUser/configs"
+	"github.com/infinitss13/InnoTaxiUser/dataBase"
 	"github.com/infinitss13/InnoTaxiUser/middleware"
+	"github.com/infinitss13/InnoTaxiUser/services"
 )
 
 type AuthHandlers struct {

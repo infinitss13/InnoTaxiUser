@@ -2,9 +2,9 @@ package configs
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
@@ -64,8 +64,12 @@ func NewConnectionMongo() ConnectionMongo {
 }
 
 func (c *DBConfig) ConnectionDbData() string {
-	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
+	if err := godotenv.Load(); err != nil {
+		return "host=localhost port=5436 user=postgres dbname=postgres password=qwerty sslmode=disable"
+	} else {
+		return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+			c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
+	}
 }
 
 func (c *ServerConfig) SetTCPPort() string {

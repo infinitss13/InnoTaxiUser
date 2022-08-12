@@ -2,11 +2,11 @@ package services
 
 import (
 	"errors"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
 	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/infinitss13/InnoTaxiUser/dataBase"
 	"github.com/infinitss13/InnoTaxiUser/entity"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,11 +16,10 @@ type Service struct {
 }
 
 func (srv *Service) CreateUser(user entity.User) (int, error) {
-	password, err := GenerateHash(user)
+	password, err := GenerateHash(user.Password)
 	if err != nil {
 		return 0, err
 	}
-
 	user.Password = password
 	isExist := srv.Db.UserExist(user)
 	if isExist != false {
@@ -34,8 +33,8 @@ func (srv *Service) CreateUser(user entity.User) (int, error) {
 	return id, nil
 }
 
-func GenerateHash(user entity.User) (string, error) {
-	saltedBytes := []byte(user.Password)
+func GenerateHash(password string) (string, error) {
+	saltedBytes := []byte(password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
