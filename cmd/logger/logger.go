@@ -17,7 +17,7 @@ type LoggerMongo struct {
 }
 
 func NewLogger(database *mongo.Database) LoggerMongo {
-	return LoggerMongo {
+	return LoggerMongo{
 		collection: database.Collection(configs.NewConnectionMongo().MongoCollection),
 	}
 }

@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
