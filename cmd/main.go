@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/infinitss13/InnoTaxiUser"
 	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/entity"
 	"github.com/infinitss13/InnoTaxiUser/handler"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -16,8 +16,13 @@ func main() {
 	serverConfig := configs.NewServerConfig()
 
 	port := serverConfig.SetTCPPort()
-	server := new(entity.Server)
-	err := server.Run(port, handler.SetRequestHandlers())
+	server := new(innotaxiuser.Server)
+	handlers, err := handler.SetRequestHandlers()
+	if err != nil {
+		logrus.Errorf("error setting http handlers %v", err)
+		return
+	}
+	err = server.Run(port, handlers)
 	if err != nil {
 		logrus.Error(err)
 		return

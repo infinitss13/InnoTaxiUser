@@ -1,4 +1,4 @@
-package dataBase
+package database
 
 import (
 	"github.com/infinitss13/InnoTaxiUser/configs"

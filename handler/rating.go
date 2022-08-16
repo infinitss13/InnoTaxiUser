@@ -9,6 +9,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type getRate struct {
+	Phone  string
+	Rating float32
+}
+
 func (handler AuthHandlers) getRating(context *gin.Context) {
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
@@ -24,10 +29,11 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
-	context.JSON(http.StatusOK, map[string]interface{}{
-		"phone":  userPhone,
-		"rating": rating,
-	})
+	rate := getRate{
+		Phone:  userPhone,
+		Rating: rating,
+	}
+	context.JSON(http.StatusOK, rate)
 	handler.loggerMongo.AddNewInfoLog(context, userPhone, "")
 	logrus.Info("status code :", http.StatusOK, " user get rating")
 

@@ -1,4 +1,4 @@
-package dataBase
+package database
 
 import (
 	"time"
@@ -8,15 +8,15 @@ import (
 )
 
 //InsertUser - function that will implement new user to the DB
-func (dataBase *DB) InsertUser(user entity.User) (int, error) {
+func (dataBase *DB) InsertUser(user entity.User) error {
 	timeNow := time.Now()
 	query := "INSERT INTO users (name, phone, email, password_hash,rating, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
 	row := dataBase.db.QueryRow(query, user.Name, user.Phone, user.Email, user.Password, 0.0, timeNow, timeNow)
 	var id = 0
 	if err := row.Scan(&id); err != nil {
-		return 0, err
+		return err
 	}
-	return id, nil
+	return nil
 
 }
 
@@ -32,13 +32,13 @@ func (dataBase *DB) UserIsRegistered(userPhone string) (string, error) {
 }
 
 //UserExist - function check if the user already exists
-func (dataBase *DB) UserExist(user entity.User) bool {
+func (dataBase *DB) UserExist(user entity.User) (bool, error) {
 	query := "SELECT id FROM users WHERE phone=$1 OR email=$2"
 	var id int
 	err := dataBase.db.Get(&id, query, user.Phone, user.Email)
 	if err != nil {
-		return false
+		return false, UserExistErr
 	}
-	return true
+	return true, nil
 
 }

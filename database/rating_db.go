@@ -1,4 +1,4 @@
-package dataBase
+package database
 
 func (dataBase *DB) GetRatingByPhone(userPhone string) (float32, error) {
 	query := "SELECT rating from users WHERE phone=$1"

@@ -4,17 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
+	"github.com/infinitss13/InnoTaxiUser/database"
 	"github.com/sirupsen/logrus"
 )
 
 func HandleError(err error, context *gin.Context) {
 	switch err {
-	case dataBase.UserNotFound:
+	case database.UserNotFound:
 		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		logrus.Error("status code: ", http.StatusBadRequest, err)
 		return
-	case dataBase.UserExistErr:
+	case database.UserExistErr:
 		logrus.Error("status code: ", http.StatusBadRequest, err)
 		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return

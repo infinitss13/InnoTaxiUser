@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/InnoTaxiUser/cmd/logger"
 	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
+	"github.com/infinitss13/InnoTaxiUser/database"
 	"github.com/infinitss13/InnoTaxiUser/middleware"
 	"github.com/infinitss13/InnoTaxiUser/services"
 )
@@ -16,23 +16,26 @@ type AuthHandlers struct {
 	service     *services.Service
 }
 
-func NewAuthHandlers() *AuthHandlers {
+func NewAuthHandlers() (*AuthHandlers, error) {
 	mongoDBClient, err := logger.NewClientMongo()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	srv := new(services.Service)
-	srv.Db, err = dataBase.NewDB(configs.NewConfig())
+	srv.Db, err = database.NewDB(configs.NewConfig())
 
 	return &AuthHandlers{
 		loggerMongo: logger.NewLogger(mongoDBClient),
 		service:     srv,
-	}
+	}, nil
 }
 
-func SetRequestHandlers() *gin.Engine {
+func SetRequestHandlers() (*gin.Engine, error) {
 	router := gin.New()
-	handler := NewAuthHandlers()
+	handler, err := NewAuthHandlers()
+	if err != nil {
+		return nil, err
+	}
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "hello message")
 	})
@@ -48,5 +51,5 @@ func SetRequestHandlers() *gin.Engine {
 		api.POST("/order", orderTaxi)
 		api.POST("/rateTrip", rateTrip)
 	}
-	return router
+	return router, nil
 }

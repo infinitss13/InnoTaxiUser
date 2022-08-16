@@ -20,7 +20,7 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 		return
 	}
 
-	id, err := handler.service.CreateUser(*input)
+	err = handler.service.CreateUser(*input)
 	if err != nil {
 		errorCreate := fmt.Errorf("sign-up error, %v", err)
 		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorCreate, "some problems")
@@ -32,7 +32,7 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	context.JSON(http.StatusOK, id)
+	context.JSON(http.StatusOK, "user successfully created")
 	logrus.Info("status code: ", http.StatusOK, " User is created")
 }
 

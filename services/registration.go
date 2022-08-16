@@ -6,31 +6,30 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
+	"github.com/infinitss13/InnoTaxiUser/database"
 	"github.com/infinitss13/InnoTaxiUser/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
-	Db *dataBase.DB
+	Db *database.DB
 }
 
-func (srv *Service) CreateUser(user entity.User) (int, error) {
+func (srv *Service) CreateUser(user entity.User) error {
 	password, err := GenerateHash(user.Password)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	user.Password = password
-	isExist := srv.Db.UserExist(user)
-	if isExist != false {
-		return 0, dataBase.UserExistErr
+	isExist, err := srv.Db.UserExist(user)
+	if isExist != false || err != database.UserExistErr {
+		return err
 	}
-	id, err := srv.Db.InsertUser(user)
+	err = srv.Db.InsertUser(user)
 	if err != nil {
-		return 0, errors.New("error insert database")
+		return err
 	}
-
-	return id, nil
+	return nil
 }
 
 func GenerateHash(password string) (string, error) {

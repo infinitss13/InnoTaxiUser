@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/dataBase"
+	"github.com/infinitss13/InnoTaxiUser/database"
 )
 
 type OrderData struct {
@@ -19,7 +19,7 @@ func orderTaxi(context *gin.Context) {
 		ErrorBinding(context)
 		return
 	}
-	_, err = dataBase.NewDB(configs.NewConfig())
+	_, err = database.NewDB(configs.NewConfig())
 	if err != nil {
 		HandleError(err, context)
 		return
