@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/middleware"
+	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,14 +18,14 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.AddNewErrorLog(context, "-", errorRating, "some problems")
+		handler.loggerMongo.LogError(context, errorRating, "some problems")
 		HandleError(err, context)
 		return
 	}
 	rating, userPhone, err := handler.service.GetRatingWithToken(tokenSigned)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.AddNewErrorLog(context, userPhone, errorRating, "some problems")
+		handler.loggerMongo.LogError(context, errorRating, "some problems")
 		HandleError(err, context)
 		return
 	}
@@ -34,7 +34,7 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		Rating: rating,
 	}
 	context.JSON(http.StatusOK, rate)
-	handler.loggerMongo.AddNewInfoLog(context, userPhone, "")
+	handler.loggerMongo.LogInfo(context, "")
 	logrus.Info("status code :", http.StatusOK, " user get rating")
 
 }

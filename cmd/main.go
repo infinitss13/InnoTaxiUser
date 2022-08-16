@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/infinitss13/InnoTaxiUser"
-	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/handler"
+	"github.com/infinitss13/innotaxiuser"
+	"github.com/infinitss13/innotaxiuser/configs"
+	"github.com/infinitss13/innotaxiuser/handler"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )

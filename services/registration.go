@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/infinitss13/InnoTaxiUser/database"
-	"github.com/infinitss13/InnoTaxiUser/entity"
+	"github.com/infinitss13/innotaxiuser/database"
+	"github.com/infinitss13/innotaxiuser/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/cmd/logger"
-	"github.com/infinitss13/InnoTaxiUser/configs"
-	"github.com/infinitss13/InnoTaxiUser/database"
-	"github.com/infinitss13/InnoTaxiUser/middleware"
-	"github.com/infinitss13/InnoTaxiUser/services"
+	"github.com/infinitss13/innotaxiuser/cmd/logger"
+	"github.com/infinitss13/innotaxiuser/configs"
+	"github.com/infinitss13/innotaxiuser/database"
+	"github.com/infinitss13/innotaxiuser/middleware"
+	"github.com/infinitss13/innotaxiuser/services"
 )
 
 type AuthHandlers struct {

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/entity"
+	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/sirupsen/logrus"
 )
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/services"
+	"github.com/infinitss13/innotaxiuser/services"
 )
 
 func GetToken(context *gin.Context) (string, error) {

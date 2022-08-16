@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/infinitss13/InnoTaxiUser/configs"
+	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/jmoiron/sqlx"
 )
 

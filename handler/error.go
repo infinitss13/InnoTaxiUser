@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/InnoTaxiUser/database"
+	"github.com/infinitss13/innotaxiuser/database"
 	"github.com/sirupsen/logrus"
 )
 

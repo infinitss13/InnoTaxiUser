@@ -3,10 +3,10 @@ package logger
 import (
 	"context"
 	"fmt"
-	"github.com/infinitss13/InnoTaxiUser/configs"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/infinitss13/InnoTaxiUser/configs"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

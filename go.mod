@@ -1,4 +1,4 @@
-module github.com/infinitss13/InnoTaxiUser
+module github.com/infinitss13/innotaxiuser
 
 go 1.17
 

@@ -3,7 +3,7 @@ package database
 import (
 	"time"
 
-	"github.com/infinitss13/InnoTaxiUser/entity"
+	"github.com/infinitss13/innotaxiuser/entity"
 	_ "github.com/lib/pq"
 )
 
