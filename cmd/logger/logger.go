@@ -88,11 +88,11 @@ func NewClientMongo() (db *mongo.Database, err error) {
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to mongoDB : %v", err)
+		return nil, err
 	}
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to ping mongoDB : %v", err)
+		return nil, err
 	}
 
 	return client.Database(newConnection.MongoDBName), nil
