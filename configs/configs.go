@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,43 +32,37 @@ func NewServerConfig() *ServerConfig {
 		tcpPort: os.Getenv("PORT"),
 	}
 }
+func getEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		value = defaultValue
+	}
+	return value
+}
 
 func NewConfig() DBConfig {
 	return DBConfig{
-		DBHost:     os.Getenv("HOST_DB"),
-		DBPort:     os.Getenv("PORT_DB"),
-		DBUsername: os.Getenv("USERNAME_DB"),
-		DBName:     os.Getenv("DBNAME_DB"),
-		DBSslmode:  os.Getenv("SSLMODE_DB"),
-		DBPassword: os.Getenv("PASSWORD_DB"),
+		DBHost:     getEnv("HOST_DB", "localhost"),
+		DBPort:     getEnv("PORT_DB", "5436"),
+		DBUsername: getEnv("USERNAME_DB", "postgres"),
+		DBName:     getEnv("DBNAME_DB", "postgres"),
+		DBSslmode:  getEnv("SSLMODE_DB", "disable"),
+		DBPassword: getEnv("PASSWORD_DB", "qwerty"),
 	}
-
 }
+
 func NewConnectionMongo() ConnectionMongo {
-	if err := godotenv.Load(); err != nil {
-		return ConnectionMongo{
-			MongoHost:       "127.0.0.1",
-			MongoPort:       "27017",
-			MongoDBName:     "projectdb",
-			MongoCollection: "logging",
-		}
-	} else {
-		return ConnectionMongo{
-			MongoHost:       os.Getenv("HOST_MONGO"),
-			MongoPort:       os.Getenv("PORT_MONGO"),
-			MongoDBName:     os.Getenv("DBNAME_MONGO"),
-			MongoCollection: os.Getenv("COLLECTION_MONGO"),
-		}
+	return ConnectionMongo{
+		MongoHost:       getEnv("HOST_MONGO", "127.0.0.1"),
+		MongoPort:       getEnv("PORT_MONGO", "27017"),
+		MongoDBName:     getEnv("DBNAME_MONGO", "projectdb"),
+		MongoCollection: getEnv("COLLECTION_MONGO", "logging"),
 	}
 }
 
 func (c *DBConfig) ConnectionDbData() string {
-	if err := godotenv.Load(); err != nil {
-		return "host=localhost port=5436 user=postgres dbname=postgres password=qwerty sslmode=disable"
-	} else {
-		return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-			c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
-	}
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
 }
 
 func (c *ServerConfig) SetTCPPort() string {
