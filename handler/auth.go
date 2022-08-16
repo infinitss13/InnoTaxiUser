@@ -2,12 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
@@ -51,11 +49,7 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
-	context.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Hello",
-		"token":   token,
-		"time":    time.Now(),
-	})
+	context.JSON(http.StatusOK, token)
 	handler.loggerMongo.LogInfo(context, "")
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	return
