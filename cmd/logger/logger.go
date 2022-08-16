@@ -22,7 +22,7 @@ func NewLogger(database *mongo.Database) LoggerMongo {
 	}
 }
 
-func (d LoggerMongo) AddNewErrorLog(ctx *gin.Context, userPhone string, errorRequest error, comments string) error {
+func (d LoggerMongo) LogError(ctx *gin.Context, err error, comments string) error {
 	timeNow := time.Now()
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
@@ -36,24 +36,20 @@ func (d LoggerMongo) AddNewErrorLog(ctx *gin.Context, userPhone string, errorReq
 			"requestType", ctx.Request.Method,
 		},
 		{
-			"userPhone", userPhone,
-		},
-
-		{
-			"error", errorRequest.Error(),
+			"error", err.Error(),
 		},
 		{
 			"requestTime", timeNow.Format(time.RFC3339),
 		},
 	}
-	_, err := d.collection.InsertOne(context.TODO(), doc)
+	_, err = d.collection.InsertOne(context.TODO(), doc)
 	if err != nil {
 
 		return err
 	}
 	return nil
 }
-func (d LoggerMongo) AddNewInfoLog(ctx *gin.Context, userPhone string, comments string) error {
+func (d LoggerMongo) LogInfo(ctx *gin.Context, comments string) error {
 	timeNow := time.Now()
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
@@ -65,9 +61,6 @@ func (d LoggerMongo) AddNewInfoLog(ctx *gin.Context, userPhone string, comments 
 		},
 		{
 			"requestType", ctx.Request.Method,
-		},
-		{
-			"userPhone", userPhone,
 		},
 		{
 			"error", "no",

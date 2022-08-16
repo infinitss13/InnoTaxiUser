@@ -15,7 +15,7 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	input := new(entity.User)
 	err := context.BindJSON(&input)
 	if err != nil {
-		handler.loggerMongo.AddNewErrorLog(context, input.Phone, err, "some problems")
+		handler.loggerMongo.LogError(context, err, "some problems")
 		HandleError(err, context)
 		return
 	}
@@ -23,11 +23,11 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	err = handler.service.CreateUser(*input)
 	if err != nil {
 		errorCreate := fmt.Errorf("sign-up error, %v", err)
-		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorCreate, "some problems")
+		handler.loggerMongo.LogError(context, errorCreate, "some problems")
 		HandleError(err, context)
 		return
 	}
-	err = handler.loggerMongo.AddNewInfoLog(context, input.Phone, "")
+	err = handler.loggerMongo.LogInfo(context, "")
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
@@ -40,14 +40,14 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	input := new(entity.InputSignIn)
 	if err := context.BindJSON(&input); err != nil {
 		errorCreate := fmt.Errorf("sign-in error,%v", err)
-		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorCreate, "some problems")
+		handler.loggerMongo.LogError(context, errorCreate, "some problems")
 		ErrorBinding(context)
 		return
 	}
 	token, err := handler.service.SignInUser(*input)
 	if err != nil {
 		errorSignIn := fmt.Errorf("sign-in error : %v", err)
-		handler.loggerMongo.AddNewErrorLog(context, input.Phone, errorSignIn, "some problems")
+		handler.loggerMongo.LogError(context, errorSignIn, "some problems")
 		HandleError(err, context)
 		return
 	}
@@ -56,7 +56,7 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 		"token":   token,
 		"time":    time.Now(),
 	})
-	handler.loggerMongo.AddNewInfoLog(context, input.Phone, "")
+	handler.loggerMongo.LogInfo(context, "")
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	return
 }
