@@ -2,10 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"github.com/go-redis/redis/v7"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/infinitss13/innotaxiuser/cmd/cash"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/sirupsen/logrus"
 )
@@ -24,7 +24,7 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		return
 	}
 	isKey, err := handler.cash.GetValue(tokenSigned)
-	if isKey != false && err != redis.Nil {
+	if isKey != false && err != cash.UserSignedOut {
 		context.JSON(http.StatusBadRequest, "user with this token signed-out")
 		return
 	}

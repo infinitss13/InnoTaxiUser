@@ -2,12 +2,12 @@ package services
 
 import (
 	"errors"
-	"github.com/infinitss13/innotaxiuser/configs"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
 	"github.com/infinitss13/innotaxiuser/entity"
 	"golang.org/x/crypto/bcrypt"

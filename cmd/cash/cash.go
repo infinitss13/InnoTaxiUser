@@ -1,10 +1,14 @@
 package cash
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/go-redis/redis/v7"
 	"github.com/infinitss13/innotaxiuser/configs"
 )
+
+var UserSignedOut error = errors.New("user have signed-out")
 
 type RedisCash struct {
 	Client     *redis.Client
@@ -46,7 +50,7 @@ func (cash *RedisCash) SetValue(key string, value string) {
 func (cash *RedisCash) GetValue(key string) (bool, error) {
 	err := cash.Client.Get(key)
 	if err.Err() == redis.Nil {
-		return false, err.Err()
+		return false, UserSignedOut
 	} else {
 		return true, nil
 	}

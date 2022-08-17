@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/infinitss13/innotaxiuser/cmd/cash"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/infinitss13/innotaxiuser/cmd/cash"
 	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
