@@ -73,7 +73,7 @@ func NewConnectionRedis() (ConnectionRedis, error) {
 	if err != nil {
 		return ConnectionRedis{}, err
 	}
-	timeInt, err := strconv.Atoi(GetEnv("EXPIRES_REDIS", "1"))
+	timeInt, err := strconv.Atoi(GetEnv("TOKEN_EXPIRES", "15"))
 	if err != nil {
 		return ConnectionRedis{}, err
 	}

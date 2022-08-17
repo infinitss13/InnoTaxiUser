@@ -83,7 +83,6 @@ func NewClientMongo() (db *mongo.Database, err error) {
 	newConnection := configs.NewConnectionMongo()
 
 	mongoDBURL = fmt.Sprintf("mongodb://%s:%s", newConnection.MongoHost, newConnection.MongoPort)
-
 	clientOptions := options.Client().ApplyURI(mongoDBURL)
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)

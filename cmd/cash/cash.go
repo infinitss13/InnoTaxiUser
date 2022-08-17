@@ -34,7 +34,6 @@ func NewClientRedis() (*redis.Client, error) {
 	return redis.NewClient(&redis.Options{
 		Addr:        connectionRedis.RedisHost,
 		DB:          connectionRedis.RedisDB,
-		Password:    "",
 		DialTimeout: connectionRedis.RedisExpires,
 	}), nil
 }
