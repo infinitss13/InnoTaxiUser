@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/go-redis/redis/v7"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,11 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		errorRating := fmt.Errorf("get rating error : %v", err)
 		handler.loggerMongo.LogError(context, errorRating, "some problems")
 		HandleError(err, context)
+		return
+	}
+	isKey, err := handler.cash.GetValue(tokenSigned)
+	if isKey != false && err != redis.Nil {
+		context.JSON(http.StatusBadRequest, "user with this token signed-out")
 		return
 	}
 	rating, userPhone, err := handler.service.GetRatingWithToken(tokenSigned)

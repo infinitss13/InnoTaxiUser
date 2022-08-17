@@ -2,11 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
+	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
@@ -52,6 +52,20 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, token)
 	handler.loggerMongo.LogInfo(context, "")
+
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	return
+}
+
+func (handler AuthHandlers) signOut(context *gin.Context) {
+
+	token, err := middleware.GetToken(context)
+	if err != nil {
+		errorSignOut := fmt.Errorf("sign-out error: %v", err)
+		handler.loggerMongo.LogError(context, errorSignOut, "some problems")
+		HandleError(err, context)
+		return
+	}
+	handler.cash.SetValue(token, "true")
+	context.JSON(http.StatusOK, "user successfully signed-out")
 }

@@ -3,6 +3,8 @@ package configs
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -23,6 +25,12 @@ type ConnectionMongo struct {
 	MongoCollection string
 }
 
+type ConnectionRedis struct {
+	RedisHost    string
+	RedisDB      int
+	RedisExpires time.Duration
+}
+
 type ServerConfig struct {
 	tcpPort string
 }
@@ -32,7 +40,7 @@ func NewServerConfig() *ServerConfig {
 		tcpPort: os.Getenv("PORT"),
 	}
 }
-func getEnv(key, defaultValue string) string {
+func GetEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
 		value = defaultValue
@@ -42,22 +50,40 @@ func getEnv(key, defaultValue string) string {
 
 func NewConfig() DBConfig {
 	return DBConfig{
-		DBHost:     getEnv("HOST_DB", "localhost"),
-		DBPort:     getEnv("PORT_DB", "5436"),
-		DBUsername: getEnv("USERNAME_DB", "postgres"),
-		DBName:     getEnv("DBNAME_DB", "postgres"),
-		DBSslmode:  getEnv("SSLMODE_DB", "disable"),
-		DBPassword: getEnv("PASSWORD_DB", "qwerty"),
+		DBHost:     GetEnv("HOST_DB", "localhost"),
+		DBPort:     GetEnv("PORT_DB", "5436"),
+		DBUsername: GetEnv("USERNAME_DB", "postgres"),
+		DBName:     GetEnv("DBNAME_DB", "postgres"),
+		DBSslmode:  GetEnv("SSLMODE_DB", "disable"),
+		DBPassword: GetEnv("PASSWORD_DB", "qwerty"),
 	}
 }
 
 func NewConnectionMongo() ConnectionMongo {
 	return ConnectionMongo{
-		MongoHost:       getEnv("HOST_MONGO", "127.0.0.1"),
-		MongoPort:       getEnv("PORT_MONGO", "27017"),
-		MongoDBName:     getEnv("DBNAME_MONGO", "projectdb"),
-		MongoCollection: getEnv("COLLECTION_MONGO", "logging"),
+		MongoHost:       GetEnv("HOST_MONGO", "127.0.0.1"),
+		MongoPort:       GetEnv("PORT_MONGO", "27017"),
+		MongoDBName:     GetEnv("DBNAME_MONGO", "projectdb"),
+		MongoCollection: GetEnv("COLLECTION_MONGO", "logging"),
 	}
+}
+
+func NewConnectionRedis() (ConnectionRedis, error) {
+	DBNumber, err := strconv.Atoi(GetEnv("DB_REDIS", "0"))
+	if err != nil {
+		return ConnectionRedis{}, err
+	}
+	timeInt, err := strconv.Atoi(GetEnv("EXPIRES_REDIS", "1"))
+	if err != nil {
+		return ConnectionRedis{}, err
+	}
+	timeExpires := time.Duration(timeInt) * time.Minute
+	//TODO : realize getting time from env file
+	return ConnectionRedis{
+		RedisHost:    GetEnv("HOST_REDIS", "127.0.0.1:6379"),
+		RedisDB:      DBNumber,
+		RedisExpires: timeExpires,
+	}, nil
 }
 
 func (c *DBConfig) ConnectionDbData() string {

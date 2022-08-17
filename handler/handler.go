@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/infinitss13/innotaxiuser/cmd/cash"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 type AuthHandlers struct {
 	loggerMongo logger.LoggerMongo
 	service     *services.Service
+	cash        cash.RedisCash
 }
 
 func NewAuthHandlers() (*AuthHandlers, error) {
@@ -23,10 +25,17 @@ func NewAuthHandlers() (*AuthHandlers, error) {
 	}
 	srv := new(services.Service)
 	srv.Db, err = database.NewDB(configs.NewConfig())
-
+	if err != nil {
+		return nil, err
+	}
+	ch, err := cash.NewRedisCash()
+	if err != nil {
+		return nil, err
+	}
 	return &AuthHandlers{
 		loggerMongo: logger.NewLogger(mongoDBClient),
 		service:     srv,
+		cash:        ch,
 	}, nil
 }
 
@@ -47,6 +56,7 @@ func SetRequestHandlers() (*gin.Engine, error) {
 	}
 	api := router.Group("/api").Use(middleware.Auth())
 	{
+		api.POST("/sign-out", handler.signOut)
 		api.GET("/rating", handler.getRating)
 		api.POST("/order", orderTaxi)
 		api.POST("/rateTrip", rateTrip)

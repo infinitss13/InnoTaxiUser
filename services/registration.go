@@ -2,7 +2,9 @@ package services
 
 import (
 	"errors"
+	"github.com/infinitss13/innotaxiuser/configs"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -53,10 +55,14 @@ type JWTClaim struct {
 }
 
 func CreateToken(phone string) (string, error) {
+	timeExp, err := strconv.Atoi(configs.GetEnv("TOKEN_EXPIRES", "15"))
+	if err != nil {
+		return "", err
+	}
 	claims := &JWTClaim{
 		Phone: phone,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(15 * time.Minute).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(timeExp) * time.Minute).Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
