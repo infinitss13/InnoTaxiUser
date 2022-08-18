@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/innotaxiuser/cmd/cash"
+	"github.com/infinitss13/innotaxiuser/cmd/cache"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/sirupsen/logrus"
 )
@@ -19,19 +19,20 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.LogError(context, errorRating, "some problems")
+		handler.loggerMongo.LogError(context, errorRating)
 		HandleError(err, context)
 		return
 	}
-	isKey, err := handler.cash.GetValue(tokenSigned)
-	if isKey != false && err != cash.UserSignedOut {
+	logrus.Info()
+	isKey, err := handler.cache.GetValue(tokenSigned)
+	if isKey != false && err != cache.UserSignedOut {
 		context.JSON(http.StatusBadRequest, "user with this token signed-out")
 		return
 	}
 	rating, userPhone, err := handler.service.GetRatingWithToken(tokenSigned)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.LogError(context, errorRating, "some problems")
+		handler.loggerMongo.LogError(context, errorRating)
 		HandleError(err, context)
 		return
 	}
@@ -40,7 +41,7 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		Rating: rating,
 	}
 	context.JSON(http.StatusOK, rate)
-	handler.loggerMongo.LogInfo(context, "")
+	handler.loggerMongo.LogInfo(context)
 	logrus.Info("status code :", http.StatusOK, " user get rating")
 
 }

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/infinitss13/innotaxiuser/cmd/cash"
+	"github.com/infinitss13/innotaxiuser/cmd/cache"
 	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
@@ -15,7 +15,7 @@ import (
 type AuthHandlers struct {
 	loggerMongo logger.LoggerMongo
 	service     *services.Service
-	cash        cash.RedisCash
+	cache       cache.RedisCash
 }
 
 func NewAuthHandlers() (*AuthHandlers, error) {
@@ -28,14 +28,14 @@ func NewAuthHandlers() (*AuthHandlers, error) {
 	if err != nil {
 		return nil, err
 	}
-	ch, err := cash.NewRedisCash()
+	ch, err := cache.NewRedisCash()
 	if err != nil {
 		return nil, err
 	}
 	return &AuthHandlers{
 		loggerMongo: logger.NewLogger(mongoDBClient),
 		service:     srv,
-		cash:        ch,
+		cache:       ch,
 	}, nil
 }
 

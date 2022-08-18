@@ -22,15 +22,12 @@ func NewLogger(database *mongo.Database) LoggerMongo {
 	}
 }
 
-func (d LoggerMongo) LogError(ctx *gin.Context, err error, comments string) error {
+func (d LoggerMongo) LogError(ctx *gin.Context, err error) error {
 	timeNow := time.Now()
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
 		{
 			"logLevel", "ERROR",
-		},
-		{
-			"message", comments,
 		},
 		{
 			"requestType", ctx.Request.Method,
@@ -49,15 +46,12 @@ func (d LoggerMongo) LogError(ctx *gin.Context, err error, comments string) erro
 	}
 	return nil
 }
-func (d LoggerMongo) LogInfo(ctx *gin.Context, comments string) error {
+func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 	timeNow := time.Now()
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
 		{
 			"logLevel", "INFO",
-		},
-		{
-			"message", comments,
 		},
 		{
 			"requestType", ctx.Request.Method,
