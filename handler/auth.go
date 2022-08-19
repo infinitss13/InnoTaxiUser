@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"time"
 )
 
 var (
@@ -16,9 +17,21 @@ var (
 		Name: "inno_taxi_user_number_requests",
 		Help: "The total number of processed requests",
 	})
+	request = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "inno_taxi_request_time",
+		Help: " request duration",
+	})
+	buckets               = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
+	responseTimeHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Namespace: "namespace",
+		Name:      "inno_taxi_user_request_duration",
+		Help:      "Histogram of response time for handler in seconds",
+		Buckets:   buckets,
+	}, []string{"route", "method", "status_code"})
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
+	startTime := time.Now()
 	opsProcessed.Inc()
 	input := new(entity.User)
 	err := context.BindJSON(&input)
@@ -41,6 +54,9 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, "user successfully created")
 	logrus.Info("status code: ", http.StatusOK, " User is created")
+	requestTime := time.Since(startTime)
+	responseTimeHistogram.WithLabelValues("-", context.Request.Method, "200:OK").Observe(requestTime.Seconds())
+	request.Add(requestTime.Seconds())
 }
 
 func (handler AuthHandlers) signIn(context *gin.Context) {
