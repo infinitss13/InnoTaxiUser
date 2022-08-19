@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -38,6 +39,12 @@ func NewAuthHandlers() (*AuthHandlers, error) {
 		cache:       ch,
 	}, nil
 }
+func prometheusHandler() gin.HandlerFunc {
+	h := promhttp.Handler()
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func SetRequestHandlers() (*gin.Engine, error) {
 	router := gin.New()
@@ -48,7 +55,7 @@ func SetRequestHandlers() (*gin.Engine, error) {
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "hello message")
 	})
-
+	router.GET("/metrics", prometheusHandler())
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", handler.signUp)

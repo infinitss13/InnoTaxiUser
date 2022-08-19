@@ -24,8 +24,8 @@ func (srv *Service) CreateUser(user entity.User) error {
 	}
 	user.Password = password
 	isExist, err := srv.Db.UserExist(user)
-	if isExist != false || err != database.UserExistErr {
-		return err
+	if isExist != false {
+		return database.UserExistErr
 	}
 	err = srv.Db.InsertUser(user)
 	if err != nil {

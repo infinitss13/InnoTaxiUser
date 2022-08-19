@@ -37,8 +37,9 @@ func (dataBase *DB) UserExist(user entity.User) (bool, error) {
 	var id int
 	err := dataBase.db.Get(&id, query, user.Phone, user.Email)
 	if err != nil {
-		return false, UserExistErr
+		return false, err
 	}
+
 	return true, nil
 
 }

@@ -16,6 +16,7 @@ type getRate struct {
 }
 
 func (handler AuthHandlers) getRating(context *gin.Context) {
+	opsProcessed.Inc()
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
