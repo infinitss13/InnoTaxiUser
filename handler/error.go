@@ -11,12 +11,12 @@ import (
 func HandleError(err error, context *gin.Context) {
 	switch err {
 	case database.UserNotFound:
-		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, err.Error())
 		logrus.Error("status code: ", http.StatusBadRequest, err)
 		return
 	case database.UserExistErr:
 		logrus.Error("status code: ", http.StatusBadRequest, err)
-		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 
 	default:

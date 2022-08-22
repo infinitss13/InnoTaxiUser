@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
-	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/infinitss13/innotaxiuser/services"
 )
 
@@ -56,12 +56,13 @@ func SetRequestHandlers() (*gin.Engine, error) {
 		c.JSON(http.StatusOK, "hello message")
 	})
 	router.GET("/metrics", prometheusHandler())
-	auth := router.Group("/auth")
+	auth := router.Group("/auth").Use(metricHttpStatus)
 	{
 		auth.POST("/sign-up", handler.signUp)
 		auth.POST("/sign-in", handler.signIn)
 	}
-	api := router.Group("/api").Use(middleware.Auth())
+
+	api := router.Group("/api").Use(metricHttpStatus).Use(middleware.Auth())
 	{
 		api.POST("/sign-out", handler.signOut)
 		api.GET("/rating", handler.getRating)

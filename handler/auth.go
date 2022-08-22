@@ -6,33 +6,14 @@ import (
 	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"time"
-)
-
-var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "inno_taxi_user_number_requests",
-		Help: "The total number of processed requests",
-	})
-	request = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "inno_taxi_request_time",
-		Help: " request duration",
-	})
-	buckets               = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
-	responseTimeHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: "namespace",
-		Name:      "inno_taxi_user_request_duration",
-		Help:      "Histogram of response time for handler in seconds",
-		Buckets:   buckets,
-	}, []string{"route", "method", "status_code"})
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
-	startTime := time.Now()
-	opsProcessed.Inc()
+	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
+	requestProcessed.Inc()
+	requestSignUp.Inc()
 	input := new(entity.User)
 	err := context.BindJSON(&input)
 	if err != nil {
@@ -52,15 +33,17 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	context.JSON(http.StatusOK, "user successfully created")
+	//httpStatusCounter.WithLabelValues("http.StatusOK").Inc()
 	logrus.Info("status code: ", http.StatusOK, " User is created")
-	requestTime := time.Since(startTime)
-	responseTimeHistogram.WithLabelValues("-", context.Request.Method, "200:OK").Observe(requestTime.Seconds())
-	request.Add(requestTime.Seconds())
+	timer.ObserveDuration()
+
 }
 
 func (handler AuthHandlers) signIn(context *gin.Context) {
-	opsProcessed.Inc()
+	requestProcessed.Inc()
+	requestSignIn.Inc()
 	input := new(entity.InputSignIn)
 	if err := context.BindJSON(&input); err != nil {
 		errorCreate := fmt.Errorf("sign-in error,%v", err)
@@ -77,13 +60,14 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, token)
 	handler.loggerMongo.LogInfo(context)
-
+	//httpStatusCounter.WithLabelValues("http.StatusOK").Inc()
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	return
 }
 
 func (handler AuthHandlers) signOut(context *gin.Context) {
-	opsProcessed.Inc()
+	requestProcessed.Inc()
+	requestSignOut.Inc()
 	token, err := middleware.GetToken(context)
 	if err != nil {
 		errorSignOut := fmt.Errorf("sign-out error: %v", err)
