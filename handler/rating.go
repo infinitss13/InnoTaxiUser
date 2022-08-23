@@ -25,7 +25,6 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
-	logrus.Info()
 	isKey, err := handler.cache.GetValue(tokenSigned)
 	if isKey != false && err != cache.UserSignedOut {
 		context.JSON(http.StatusBadRequest, "user with this token signed-out")

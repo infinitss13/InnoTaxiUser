@@ -13,3 +13,10 @@ type InputSignIn struct {
 	Phone    string `json:"phone" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+type ProfileData struct {
+	Name   string
+	Phone  string
+	Email  string
+	Rating float32
+}

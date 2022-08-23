@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -17,6 +18,22 @@ type AuthHandlers struct {
 	loggerMongo logger.LoggerMongo
 	service     *services.Service
 	cache       cache.RedisCash
+}
+
+func (handler AuthHandlers) getAndCheckToken(context *gin.Context) (string, error) {
+	tokenSigned, err := middleware.GetToken(context)
+	if err != nil {
+		errorToken := fmt.Errorf("get rating error : %v", err)
+		handler.loggerMongo.LogError(context, errorToken)
+		HandleError(err, context)
+		return "", errorToken
+	}
+	isKey, err := handler.cache.GetValue(tokenSigned)
+	if isKey != false && err != cache.UserSignedOut {
+		context.JSON(http.StatusBadRequest, "user with this token signed-out")
+		return "", err
+	}
+	return tokenSigned, nil
 }
 
 func NewAuthHandlers() (*AuthHandlers, error) {
@@ -64,6 +81,7 @@ func SetRequestHandlers() (*gin.Engine, error) {
 
 	api := router.Group("/api").Use(metricHttpStatus).Use(middleware.Auth())
 	{
+		api.GET("/profile", handler.getProfile)
 		api.POST("/sign-out", handler.signOut)
 		api.GET("/rating", handler.getRating)
 		api.POST("/order", orderTaxi)

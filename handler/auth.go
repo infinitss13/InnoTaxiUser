@@ -42,6 +42,7 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 }
 
 func (handler AuthHandlers) signIn(context *gin.Context) {
+	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()
 	requestSignIn.Inc()
 	input := new(entity.InputSignIn)
@@ -62,10 +63,12 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	handler.loggerMongo.LogInfo(context)
 	//httpStatusCounter.WithLabelValues("http.StatusOK").Inc()
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
-	return
+	timer.ObserveDuration()
+
 }
 
 func (handler AuthHandlers) signOut(context *gin.Context) {
+	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()
 	requestSignOut.Inc()
 	token, err := middleware.GetToken(context)
@@ -77,4 +80,6 @@ func (handler AuthHandlers) signOut(context *gin.Context) {
 	}
 	handler.cache.SetValue(token, "true")
 	context.JSON(http.StatusOK, "user successfully signed-out")
+	timer.ObserveDuration()
+
 }

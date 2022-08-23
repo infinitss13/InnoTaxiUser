@@ -32,6 +32,12 @@ var (
 		Name: "inno_taxi_user_number_get_rating_requests",
 		Help: "The total number of processed requests of getting rating",
 	})
+
+	requestGetProfile = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "inno_taxi_user_number_get_profile_requests",
+		Help: "The total number of processed requests of getting profile",
+	})
+
 	httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "inno_taxi_http_response_time_seconds",
 		Help: "Duration of HTTP requests.",
