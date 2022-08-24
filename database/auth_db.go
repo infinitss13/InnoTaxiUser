@@ -10,8 +10,8 @@ import (
 //InsertUser - function that will implement new user to the DB
 func (dataBase *DB) InsertUser(user entity.User) error {
 	timeNow := time.Now()
-	query := "INSERT INTO users (name, phone, email, password_hash,rating, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
-	row := dataBase.db.QueryRow(query, user.Name, user.Phone, user.Email, user.Password, 0.0, timeNow, timeNow)
+	query := "INSERT INTO users (name, phone, email, password_hash,rating, created_at, updated_at, deleted) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+	row := dataBase.db.QueryRow(query, user.Name, user.Phone, user.Email, user.Password, 0.0, timeNow, timeNow, false)
 	var id = 0
 	if err := row.Scan(&id); err != nil {
 		return err

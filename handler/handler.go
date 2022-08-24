@@ -2,8 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"github.com/infinitss13/innotaxiuser/middleware"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +9,9 @@ import (
 	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
+	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/infinitss13/innotaxiuser/services"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type AuthHandlers struct {
@@ -81,7 +81,10 @@ func SetRequestHandlers() (*gin.Engine, error) {
 
 	api := router.Group("/api").Use(metricHttpStatus).Use(middleware.Auth())
 	{
+
 		api.GET("/profile", handler.getProfile)
+		api.PATCH("/profile", handler.updateProfile)
+		api.DELETE("/profile", handler.deleteProfile)
 		api.POST("/sign-out", handler.signOut)
 		api.GET("/rating", handler.getRating)
 		api.POST("/order", orderTaxi)

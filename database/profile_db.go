@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"github.com/infinitss13/innotaxiuser/entity"
 )
 
@@ -12,4 +13,35 @@ func (dataBase *DB) GetUserByPhone(userPhone string) (entity.ProfileData, error)
 		return entity.ProfileData{}, err
 	}
 	return user, nil
+}
+
+func (dataBase *DB) UpdateUser(userPhone string, data *entity.UpdateData) error {
+	query := "UPDATE users SET name=$1, phone=$2, email=$3 WHERE phone=$4"
+
+	row := dataBase.db.QueryRow(query, data.Name, data.Phone, data.Email, userPhone)
+	if row.Err() != nil {
+		return errors.New("error updating db")
+	}
+	return nil
+}
+
+func (dataBase *DB) CheckUpdateData(phone string, data *entity.UpdateData) (bool, error) {
+	query := "SELECT id FROM users WHERE phone<>$1 AND(phone=$2 OR email=$3)"
+	var id int
+	err := dataBase.db.Get(&id, query, phone, data.Phone, data.Email)
+	if err != nil {
+		return true, err
+	}
+
+	return false, nil
+}
+
+func (dataBase *DB) DeleteProfile(phone string) error {
+	query := "UPDATE users SET deleted=true WHERE phone=$1"
+
+	row := dataBase.db.QueryRow(query, phone)
+	if row.Err() != nil {
+		return row.Err()
+	}
+	return nil
 }

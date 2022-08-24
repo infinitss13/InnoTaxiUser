@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func (handler AuthHandlers) signUp(context *gin.Context) {
@@ -35,7 +36,6 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, "user successfully created")
-	//httpStatusCounter.WithLabelValues("http.StatusOK").Inc()
 	logrus.Info("status code: ", http.StatusOK, " User is created")
 	timer.ObserveDuration()
 
@@ -61,7 +61,6 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, token)
 	handler.loggerMongo.LogInfo(context)
-	//httpStatusCounter.WithLabelValues("http.StatusOK").Inc()
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	timer.ObserveDuration()
 
@@ -78,7 +77,12 @@ func (handler AuthHandlers) signOut(context *gin.Context) {
 		HandleError(err, context)
 		return
 	}
-	handler.cache.SetValue(token, "true")
+	if err = handler.cache.SetValue(token, "true"); err != nil {
+		errorSignOut := fmt.Errorf("sign-out error: %v", err)
+		handler.loggerMongo.LogError(context, errorSignOut)
+		HandleError(err, context)
+		return
+	}
 	context.JSON(http.StatusOK, "user successfully signed-out")
 	timer.ObserveDuration()
 

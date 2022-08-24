@@ -20,3 +20,13 @@ type ProfileData struct {
 	Email  string
 	Rating float32
 }
+
+type UpdateData struct {
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
+	Email string `json:"email"`
+}
+
+type DeleteData struct {
+	Password string `json:"password"`
+}

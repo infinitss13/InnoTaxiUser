@@ -7,5 +7,6 @@ CREATE TABLE users
     password_hash varchar(255) not null,
     rating real,
     created_at timestamp,
-    updated_at timestamp
+    updated_at timestamp,
+    deleted boolean
 );

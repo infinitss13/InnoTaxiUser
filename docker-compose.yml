@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 'qwerty'
     ports:
-      - '5436:5432'
+      - '5436:5436'
   monkedb:
     image: 'mongo:4.4.6'
     container_name: 'monke'
@@ -21,24 +21,28 @@ services:
     image: redis
     ports:
       - '6379:6379'
-#  prometheus:
+#  migrate:
+#    image: migrate/migrate
+#    volumes:
+#      - /schema:/schema
+##    command: ["-path", "/schema", "-database", "postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable", "up", "3"]
+#    command: ["-path", "./schema", "-database", "postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable", "up"]
+#    depends_on:
+#      - postgres
+##  prometheus:
 #    image: prom/prometheus:latest
 #    volumes:
-#      - ./prometheus:/etc/prometheus/
-#    command:
-#      - '--config.file=/etc/prometheus/prometheus.yml'
-#      - '--storage.tsdb.path=/prometheus'
+#      - /etc/prometheus:/etc/prometheus
+##    command:
+##      - '--config.file=/etc/prometheus/prometheus.yml'
+##      - '--storage.tsdb.path=/prometheus'
 #    ports:
 #      - '9090:9090'
-#    depends_on:
-#      - go-service-with-metrics
-#  go-service-with-metrics:
-#    build: Dockerfile
-#    ports:
-#      - 8000:8000
 #  grafana:
 #    image: grafana/grafana:latest
 #    ports:
 #      - 3000:3000
 #    depends_on:
 #      - prometheus
+#  taxi:
+#    build: .

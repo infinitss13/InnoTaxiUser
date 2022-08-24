@@ -2,7 +2,6 @@ package cache
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/go-redis/redis/v7"
 	"github.com/infinitss13/innotaxiuser/configs"
@@ -42,9 +41,12 @@ func NewClientRedis() (*redis.Client, error) {
 	}), nil
 }
 
-func (cash *RedisCash) SetValue(key string, value string) {
+func (cash *RedisCash) SetValue(key string, value string) error {
 	status := cash.Client.Set(key, value, cash.Connection.RedisExpires)
-	fmt.Println(status)
+	if status.Err() != nil {
+		return status.Err()
+	}
+	return nil
 }
 
 func (cash *RedisCash) GetValue(key string) (bool, error) {
