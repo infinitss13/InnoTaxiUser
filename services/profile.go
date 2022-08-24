@@ -1,8 +1,7 @@
 package services
 
 import (
-	"errors"
-
+	"github.com/infinitss13/innotaxiuser/database"
 	"github.com/infinitss13/innotaxiuser/entity"
 )
 
@@ -25,11 +24,8 @@ func (srv *Service) UpdateUserProfile(tokenSigned string, data *entity.UpdateDat
 		return err
 	}
 	isCorrect, err := srv.Db.CheckUpdateData(claims.Phone, data)
-	if err != nil {
-
-	}
 	if isCorrect != true {
-		return errors.New("data is incorrect, check your email and phone")
+		return database.UpdateDataError
 	}
 	userPhone := claims.Phone
 	err = srv.Db.UpdateUser(userPhone, data)

@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"github.com/infinitss13/innotaxiuser/entity"
 )
 
@@ -20,7 +19,7 @@ func (dataBase *DB) UpdateUser(userPhone string, data *entity.UpdateData) error 
 
 	row := dataBase.db.QueryRow(query, data.Name, data.Phone, data.Email, userPhone)
 	if row.Err() != nil {
-		return errors.New("error updating db")
+		return UpdateProfileErr
 	}
 	return nil
 }

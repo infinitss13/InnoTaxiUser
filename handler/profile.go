@@ -2,11 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func (handler AuthHandlers) getProfile(context *gin.Context) {
