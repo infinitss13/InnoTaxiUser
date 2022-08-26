@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
@@ -23,6 +24,10 @@ func GetToken(context *gin.Context) (string, error) {
 func Auth() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		splitedToken, err := GetToken(context)
+		if err != nil {
+			logrus.Error(err)
+			context.JSON(http.StatusInternalServerError, err)
+		}
 		_, err = services.VerifyToken(splitedToken)
 		if err != nil {
 			context.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())

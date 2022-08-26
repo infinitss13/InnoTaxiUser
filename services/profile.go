@@ -23,8 +23,8 @@ func (srv *Service) UpdateUserProfile(tokenSigned string, data *entity.UpdateDat
 	if err != nil {
 		return err
 	}
-	isCorrect, err := srv.Db.CheckUpdateData(claims.Phone, data)
-	if isCorrect != true {
+	isCorrect, _ := srv.Db.CheckUpdateData(claims.Phone, data)
+	if !isCorrect {
 		return database.UpdateDataError
 	}
 	userPhone := claims.Phone
