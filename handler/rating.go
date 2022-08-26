@@ -21,7 +21,9 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.LogError(context, errorRating)
+		if errorLogger := handler.loggerMongo.LogError(context, errorRating); errorLogger != nil {
+			logrus.Info("error in logger : ", errorLogger)
+		}
 		HandleError(err, context)
 		return
 	}
@@ -33,7 +35,9 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 	rating, userPhone, err := handler.service.GetRatingWithToken(tokenSigned)
 	if err != nil {
 		errorRating := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.LogError(context, errorRating)
+		if errorLogger := handler.loggerMongo.LogError(context, errorRating); errorLogger != nil {
+			logrus.Info("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}
@@ -42,7 +46,9 @@ func (handler AuthHandlers) getRating(context *gin.Context) {
 		Rating: rating,
 	}
 	context.JSON(http.StatusOK, rate)
-	handler.loggerMongo.LogInfo(context)
+	if errorLogger := handler.loggerMongo.LogInfo(context); errorLogger != nil {
+		logrus.Error("error in logger : ", errorLogger.Error())
+	}
 	logrus.Info("status code :", http.StatusOK, " user get rating")
 
 }

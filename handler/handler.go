@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,9 @@ func (handler AuthHandlers) getAndCheckToken(context *gin.Context) (string, erro
 	tokenSigned, err := middleware.GetToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("get rating error : %v", err)
-		handler.loggerMongo.LogError(context, errorToken)
+		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+			logrus.Error("error in logger", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return "", errorToken
 	}

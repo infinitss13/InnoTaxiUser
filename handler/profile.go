@@ -18,14 +18,18 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 	tokenSigned, err := handler.getAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
-		handler.loggerMongo.LogError(context, errorToken)
+		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+			logrus.Error("error in logger", errorLogger)
+		}
 		HandleError(err, context)
 		return
 	}
 	userData, err := handler.service.GetUserByToken(tokenSigned)
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
-		handler.loggerMongo.LogError(context, errorToken)
+		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}
