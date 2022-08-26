@@ -11,6 +11,6 @@ jobs:
       - name: Install golang
         uses: actions/setup-golang@v2
         with:
-        golang-version: 1.18
+        go-version: 1.18
       - name: linter
         run: golangci-lint run ./...
