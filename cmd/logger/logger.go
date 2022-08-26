@@ -68,17 +68,19 @@ func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 	timeNow := time.Now()
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
-		{
-			"logLevel", "INFO",
+		primitive.E{
+			Key: "loglevel", Value: "ERROR",
 		},
-		{
-			"requestType", ctx.Request.Method,
+		primitive.E{
+			Key:   "requestType",
+			Value: ctx.Request.Method,
 		},
-		{
-			"error", "no",
+		primitive.E{
+			Key:   "error",
+			Value: "no",
 		},
-		{
-			"requestTime", timeNow.Format(time.RFC3339),
+		primitive.E{
+			Key: "requestTime", Value: timeNow.Format(time.RFC3339),
 		},
 	}
 
