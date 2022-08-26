@@ -18,14 +18,18 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	input := new(entity.User)
 	err := context.BindJSON(&input)
 	if err != nil {
-		handler.loggerMongo.LogError(context, err)
+		if errorLogger := handler.loggerMongo.LogError(context, err); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		ErrorBinding(context)
 		return
 	}
 	err = handler.service.CreateUser(*input)
 	if err != nil {
 		errorCreate := fmt.Errorf("sign-up error, %v", err)
-		handler.loggerMongo.LogError(context, errorCreate)
+		if errorLogger := handler.loggerMongo.LogError(context, errorCreate); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}
@@ -48,19 +52,26 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	input := new(entity.InputSignIn)
 	if err := context.BindJSON(&input); err != nil {
 		errorCreate := fmt.Errorf("sign-in error,%v", err)
-		handler.loggerMongo.LogError(context, errorCreate)
+		errorLogger := handler.loggerMongo.LogError(context, errorCreate)
+		if errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		ErrorBinding(context)
 		return
 	}
 	token, err := handler.service.SignInUser(*input)
 	if err != nil {
 		errorSignIn := fmt.Errorf("sign-in error : %v", err)
-		handler.loggerMongo.LogError(context, errorSignIn)
+		if errorLogger := handler.loggerMongo.LogError(context, errorSignIn); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}
 	context.JSON(http.StatusOK, token)
-	handler.loggerMongo.LogInfo(context)
+	if err = handler.loggerMongo.LogInfo(context); err != nil {
+		logrus.Error("error in logger : ", err)
+	}
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
 	timer.ObserveDuration()
 
@@ -73,13 +84,17 @@ func (handler AuthHandlers) signOut(context *gin.Context) {
 	token, err := middleware.GetToken(context)
 	if err != nil {
 		errorSignOut := fmt.Errorf("sign-out error: %v", err)
-		handler.loggerMongo.LogError(context, errorSignOut)
+		if errorLogger := handler.loggerMongo.LogError(context, errorSignOut); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}
 	if err = handler.cache.SetValue(token, "true"); err != nil {
 		errorSignOut := fmt.Errorf("sign-out error: %v", err)
-		handler.loggerMongo.LogError(context, errorSignOut)
+		if errorLogger := handler.loggerMongo.LogError(context, errorSignOut); errorLogger != nil {
+			logrus.Error("error in logger : ", errorLogger.Error())
+		}
 		HandleError(err, context)
 		return
 	}

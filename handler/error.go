@@ -28,5 +28,4 @@ func HandleError(err error, context *gin.Context) {
 func ErrorBinding(context *gin.Context) {
 	context.AbortWithStatusJSON(http.StatusBadRequest, "wrong input data")
 	logrus.Error("status code: ", http.StatusBadRequest, " wrong input data")
-	return
 }

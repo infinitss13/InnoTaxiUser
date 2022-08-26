@@ -29,7 +29,7 @@ func (handler AuthHandlers) getAndCheckToken(context *gin.Context) (string, erro
 		return "", errorToken
 	}
 	isKey, err := handler.cache.GetValue(tokenSigned)
-	if isKey != false && err != cache.UserSignedOut {
+	if isKey && err != cache.UserSignedOut {
 		context.JSON(http.StatusBadRequest, "user with this token signed-out")
 		return "", err
 	}

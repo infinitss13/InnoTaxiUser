@@ -30,7 +30,9 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, userData)
-	handler.loggerMongo.LogInfo(context)
+	if err = handler.loggerMongo.LogInfo(context); err != nil {
+		logrus.Error("error in logger : ", err)
+	}
 	logrus.Info("status code :", http.StatusOK, " user get profile")
 	timer.ObserveDuration()
 
@@ -62,8 +64,13 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, "User is successfully updated")
 	logrus.Info("status code :", http.StatusOK, " user updated profile")
-	handler.cache.SetValue(tokenSigned, "true")
-	handler.loggerMongo.LogInfo(context)
+	if err = handler.cache.SetValue(tokenSigned, "true"); err != nil {
+		logrus.Error("error in cache db : ", err.Error())
+		handler.loggerMongo.LogError(context, err)
+	}
+	if err = handler.loggerMongo.LogInfo(context); err != nil {
+		logrus.Error("error in logger : ", err)
+	}
 }
 
 func (handler AuthHandlers) deleteProfile(context *gin.Context) {
@@ -82,8 +89,22 @@ func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 		return
 	}
 	err = handler.service.DeleteProfile(tokenSigned, deleteData.Password)
+	if err != nil {
+		errorToken := fmt.Errorf("delete profile error: %v", err)
+		errorLog := handler.loggerMongo.LogError(context, errorToken)
+		if errorLog != nil {
+			logrus.Info("error in logger : ", errorLog.Error())
+		}
+		HandleError(err, context)
+		return
+	}
 	context.JSON(http.StatusOK, "User is successfully deleted")
 	logrus.Info("status code :", http.StatusOK, " user deleted profile")
-	handler.cache.SetValue(tokenSigned, "true")
-	handler.loggerMongo.LogInfo(context)
+	if err = handler.cache.SetValue(tokenSigned, "true"); err != nil {
+		logrus.Error("error in cache db : ", err.Error())
+		handler.loggerMongo.LogError(context, err)
+	}
+	if err = handler.loggerMongo.LogInfo(context); err != nil {
+		logrus.Error("error in logger : ", err.Error())
+	}
 }
