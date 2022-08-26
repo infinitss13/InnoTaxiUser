@@ -7,10 +7,10 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      -uses: actions/checkout@v2
-      name: Install golang
-      uses: actions/setup-golang@v2
-      with:
+      - uses: actions/checkout@v2
+      - name: Install golang
+        uses: actions/setup-golang@v2
+        with:
         golang-version: 1.18
-      -name: linter
-      run: golangci-lint run ./...
+      - name: linter
+        run: golangci-lint run ./...
