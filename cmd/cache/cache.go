@@ -7,7 +7,7 @@ import (
 	"github.com/infinitss13/innotaxiuser/configs"
 )
 
-var UserSignedOut error = errors.New("user have signed-out")
+var UserSignedOut = errors.New("user have signed-out")
 
 type RedisCash struct {
 	Client     *redis.Client

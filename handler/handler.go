@@ -85,7 +85,7 @@ func SetRequestHandlers() (*gin.Engine, error) {
 		api.GET("/profile", handler.getProfile)
 		api.PATCH("/profile", handler.updateProfile)
 		api.DELETE("/profile", handler.deleteProfile)
-		api.POST("/sign-out", handler.signOut)
+		api.GET("/sign-out", handler.signOut)
 		api.GET("/rating", handler.getRating)
 		api.POST("/order", orderTaxi)
 		api.POST("/rateTrip", rateTrip)
