@@ -16,18 +16,18 @@ jobs:
       - name: Verify dependencies
         run: go mod verify
 
-#      - name: Build
-#        run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
-#      - name: Run go vet
-#        run: go vet ./...
+      - name: Run go vet
+        run: go vet ./...
 
-#      - name: Install golangci-lint
-#        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - name: test project
         run : |
           go test -v ./...
 
-#      - name: Run linter
-#        run: golangci-lint run ./...
+      - name: Run linter
+        run: golangci-lint run ./...
 
