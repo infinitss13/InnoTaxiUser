@@ -25,7 +25,8 @@ jobs:
 #      - name: Install golangci-lint
 #        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - name: test project
-        run : go test -v ./...
+        run : |
+          go test -v ./...
 
 #      - name: Run linter
 #        run: golangci-lint run ./...
