@@ -11,6 +11,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @Summary SignUp
+// @Tags auth
+// @Description handler for SignUp request, allows user to register in service
+// @ID signup
+// @Param input body entity.User true "account info"
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "user successfully created"
+// @Failure 400 {object} error
+// @Router /auth/sign-up [post]
 func (handler AuthHandlers) signUp(context *gin.Context) {
 	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()
@@ -45,6 +55,15 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 
 }
 
+// @Summary SignIn
+// @Tags auth
+// @Description handler for SignIn request, allows user to authenticate
+// @Param input body entity.InputSignIn true "account info"
+// @Accept json
+// @Produce json
+// @Success 200 {string} token "token"
+// @Failure 400 {object} error
+// @Router /auth/sign-in [post]
 func (handler AuthHandlers) signIn(context *gin.Context) {
 	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()
@@ -77,6 +96,14 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 
 }
 
+// @Summary SignOut
+// @Security ApiKeyAuth
+// @Tags auth
+// @Description handler for SignOut request, allows user log out of his account
+// @Produce json
+// @Success 200 {string} message "user successfully signed-out"
+// @Failure 400 {object} error
+// @Router /auth/sign-out [get]
 func (handler AuthHandlers) signOut(context *gin.Context) {
 	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()

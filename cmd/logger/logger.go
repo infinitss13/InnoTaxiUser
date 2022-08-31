@@ -42,21 +42,6 @@ func (d LoggerMongo) LogError(ctx *gin.Context, err error) error {
 			Key: "requestTime", Value: timeNow.Format(time.RFC3339),
 		},
 	}
-	//doc := bson.D{
-	//
-	//	{
-	//		"logLevel", "ERROR",
-	//	},
-	//	{
-	//		"requestType", ctx.Request.Method,
-	//	},
-	//	{
-	//		"error", err.Error(),
-	//	},
-	//	{
-	//		"requestTime", timeNow.Format(time.RFC3339),
-	//	},
-	//}
 	_, err = d.collection.InsertOne(context.TODO(), doc)
 	if err != nil {
 

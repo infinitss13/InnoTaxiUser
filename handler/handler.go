@@ -2,17 +2,19 @@ package handler
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/cmd/cache"
+	"github.com/sirupsen/logrus"
+	"github.com/swaggo/files"
+	"net/http"
+
 	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
 	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/infinitss13/innotaxiuser/services"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/swaggo/gin-swagger"
 )
 
 type AuthHandlers struct {
@@ -75,6 +77,7 @@ func SetRequestHandlers() (*gin.Engine, error) {
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "hello message")
 	})
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/metrics", prometheusHandler())
 	auth := router.Group("/auth").Use(metricHttpStatus)
 	{

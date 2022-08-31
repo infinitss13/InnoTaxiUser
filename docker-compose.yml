@@ -6,12 +6,12 @@ volumes:
 
 
 services:
-  postgres:
-    image: postgres
-    environment:
-      POSTGRES_PASSWORD: 'qwerty'
-    ports:
-      - '5436:5436'
+#  postgres:
+#    image: postgres
+#    environment:
+#      POSTGRES_PASSWORD: 'qwerty'
+#    ports:
+#      - '5436:5436'
   monkedb:
     image: 'mongo:4.4.6'
     container_name: 'monke'

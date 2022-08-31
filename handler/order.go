@@ -12,6 +12,15 @@ type OrderData struct {
 	To       string `json:"to"`
 }
 
+// @Summary Order Taxi
+// @Tags order
+// @Description handler for get order request, allows user to order the taxi
+// @ID ordertaxi
+// @Param input body OrderData true "order info"
+// @Produce json
+// @Success 200 {object} string "all is okay"
+// @Failure 500 {object} error
+// @Router /api/order [post]
 func orderTaxi(context *gin.Context) {
 	input := new(OrderData)
 	err := context.BindJSON(&input)

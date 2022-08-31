@@ -1,0 +1,302 @@
+basePath: /
+definitions:
+  entity.DeleteData:
+    properties:
+      password:
+        type: string
+    type: object
+  entity.InputSignIn:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  entity.ProfileData:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      rating:
+        type: number
+    type: object
+  entity.UpdateData:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  entity.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      rating:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  handler.OrderData:
+    properties:
+      from:
+        type: string
+      taxiType:
+        type: string
+      to:
+        type: string
+    type: object
+  handler.getRate:
+    properties:
+      phone:
+        type: string
+      rating:
+        type: number
+    type: object
+  handler.ratingTrip:
+    properties:
+      rating:
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API server for InnoTaxi user service
+  title: InnoTaxi user service
+  version: "1.0"
+paths:
+  /api/order:
+    post:
+      description: handler for get order request, allows user to order the taxi
+      operationId: ordertaxi
+      parameters:
+      - description: order info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.OrderData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: all is okay
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Order Taxi
+      tags:
+      - order
+  /api/profile:
+    delete:
+      consumes:
+      - application/json
+      description: handler for delete profile request, allows user to delete his account(user's
+        data will be available for registration for other users)
+      operationId: deleteprofile
+      parameters:
+      - description: password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.DeleteData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User is successfully deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Delete Profile
+      tags:
+      - profile
+    get:
+      description: handler for get profile request, allows user to check his profile
+        data(name,  phone number, email, rating)
+      operationId: getprofile
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ProfileData'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get Profile
+      tags:
+      - profile
+    patch:
+      consumes:
+      - application/json
+      description: handler for get profile request, allows user to update data(name,
+        phone number, email). You can change any field of this data, but you should
+        input correct data"
+      operationId: updateprofile
+      parameters:
+      - description: user's new data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UpdateData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user updated profile
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Update Profile
+      tags:
+      - profile
+  /api/rateTrip:
+    post:
+      description: handler for rateTrip request
+      operationId: rate trip
+      parameters:
+      - description: Rate the trip
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ratingTrip'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getRate'
+        "400":
+          description: Bad Request
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: RateTrip
+      tags:
+      - rating
+  /api/rating:
+    get:
+      description: handler for SignOut request, allows user log out of his account
+      operationId: get-rating
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getRate'
+        "400":
+          description: Bad Request
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: GetRating
+      tags:
+      - rating
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: handler for SignIn request, allows user to authenticate
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.InputSignIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-out:
+    get:
+      description: handler for SignOut request, allows user log out of his account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user successfully signed-out
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: SignOut
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: handler for SignUp request, allows user to register in service
+      operationId: signup
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user successfully created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: SignUp
+      tags:
+      - auth
+swagger: "2.0"

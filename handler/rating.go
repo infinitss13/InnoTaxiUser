@@ -15,6 +15,15 @@ type getRate struct {
 	Rating float32
 }
 
+// @Summary GetRating
+// @Security ApiKeyAuth
+// @Tags rating
+// @ID get-rating
+// @Description handler for SignOut request, allows user log out of his account
+// @Produce json
+// @Success 200 {object} getRate
+// @Failure 400 {object} error
+// @Router /api/rating [get]
 func (handler AuthHandlers) getRating(context *gin.Context) {
 	requestProcessed.Inc()
 	requestGetRating.Inc()
@@ -57,6 +66,16 @@ type ratingTrip struct {
 	Rating int `json:"rating"`
 }
 
+// @Summary RateTrip
+// @Security ApiKeyAuth
+// @Tags rating
+// @ID rate trip
+// @Description handler for rateTrip request
+// @Produce json
+// @Param input body ratingTrip true "Rate the trip"
+// @Success 200 {object} getRate
+// @Failure 400 {object} error
+// @Router /api/rateTrip [post]
 func rateTrip(context *gin.Context) {
 	inputRating := new(ratingTrip)
 	err := context.BindJSON(&inputRating)

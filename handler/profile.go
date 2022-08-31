@@ -10,6 +10,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @Summary Get Profile
+// @Tags profile
+// @Description handler for get profile request, allows user to check his profile data(name,  phone number, email, rating)
+// @ID getprofile
+// @Param input body entity.User true "account info"
+// @Produce json
+// @Success 200 {object} entity.ProfileData
+// @Failure 400 {object} error
+// @Router /api/profile [get]
 func (handler AuthHandlers) getProfile(context *gin.Context) {
 	requestGetProfile.Inc()
 	requestProcessed.Inc()
@@ -42,6 +51,16 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 
 }
 
+// @Summary Update Profile
+// @Tags profile
+// @Description handler for get profile request, allows user to update data(name, phone number, email). You can change any field of this data, but you should input correct data"
+// @ID updateprofile
+// @Accept json
+// @Produce json
+// @Param input body entity.UpdateData true "user's new data"
+// @Success 200 {object} string "user updated profile"
+// @Failure 400 {object} error
+// @Router /api/profile [patch]
 func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	update := new(entity.UpdateData)
 	if err := context.BindJSON(&update); err != nil {
@@ -85,6 +104,16 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	}
 }
 
+// @Summary Delete Profile
+// @Tags profile
+// @Description handler for delete profile request, allows user to delete his account(user's data will be available for registration for other users)
+// @ID deleteprofile
+// @Param input body entity.DeleteData true "password"
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "User is successfully deleted"
+// @Failure 400 {object} error
+// @Router /api/profile [delete]
 func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 	deleteData := new(entity.DeleteData)
 	if err := context.BindJSON(&deleteData); err != nil {

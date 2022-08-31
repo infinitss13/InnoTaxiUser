@@ -3,11 +3,22 @@ package main
 import (
 	"github.com/infinitss13/innotaxiuser"
 	"github.com/infinitss13/innotaxiuser/configs"
+	_ "github.com/infinitss13/innotaxiuser/docs"
 	"github.com/infinitss13/innotaxiuser/handler"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
+// @title InnoTaxi user service
+// @version 1.0
+// @description API server for InnoTaxi user service
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinition ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	logrus.Info("Starting application")
 	if err := godotenv.Load(); err != nil {
