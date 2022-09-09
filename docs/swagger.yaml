@@ -104,6 +104,8 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Order Taxi
       tags:
       - order
@@ -131,6 +133,8 @@ paths:
         "400":
           description: Bad Request
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Delete Profile
       tags:
       - profile
@@ -155,6 +159,8 @@ paths:
         "400":
           description: Bad Request
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Get Profile
       tags:
       - profile
@@ -182,6 +188,8 @@ paths:
         "400":
           description: Bad Request
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Update Profile
       tags:
       - profile
@@ -299,4 +307,9 @@ paths:
       summary: SignUp
       tags:
       - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

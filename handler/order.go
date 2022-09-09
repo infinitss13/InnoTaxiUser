@@ -13,6 +13,7 @@ type OrderData struct {
 }
 
 // @Summary Order Taxi
+// @Security ApiKeyAuth
 // @Tags order
 // @Description handler for get order request, allows user to order the taxi
 // @ID ordertaxi
@@ -28,7 +29,7 @@ func orderTaxi(context *gin.Context) {
 		ErrorBinding(context)
 		return
 	}
-	_, err = database.NewDB(configs.NewConfig())
+	_, err = database.NewDataBase(configs.NewDBConfig())
 	if err != nil {
 		HandleError(err, context)
 		return

@@ -5,11 +5,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DB struct {
+type DataBase struct {
 	db *sqlx.DB
 }
 
-func NewDB(config configs.DBConfig) (*DB, error) {
+func NewDataBase(config configs.DBConfig) (*DataBase, error) {
 	dataBase, err := sqlx.Open("postgres", config.ConnectionDbData())
 	if err != nil {
 		return nil, err
@@ -18,7 +18,7 @@ func NewDB(config configs.DBConfig) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DB{
+	return &DataBase{
 		db: dataBase,
 	}, nil
 }

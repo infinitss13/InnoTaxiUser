@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/entity"
-	"github.com/infinitss13/innotaxiuser/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )
@@ -28,22 +27,23 @@ func (handler AuthHandlers) signUp(context *gin.Context) {
 	input := new(entity.User)
 	err := context.BindJSON(&input)
 	if err != nil {
-		if errorLogger := handler.loggerMongo.LogError(context, err); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, err); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		ErrorBinding(context)
 		return
 	}
-	err = handler.service.CreateUser(*input)
+	err = handler.UserService.CreateUser(*input)
+
 	if err != nil {
 		errorCreate := fmt.Errorf("sign-up error, %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorCreate); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorCreate); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
-	err = handler.loggerMongo.LogInfo(context)
+	err = handler.LoggerMongo.LogInfo(context)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
@@ -71,24 +71,24 @@ func (handler AuthHandlers) signIn(context *gin.Context) {
 	input := new(entity.InputSignIn)
 	if err := context.BindJSON(&input); err != nil {
 		errorCreate := fmt.Errorf("sign-in error,%v", err)
-		errorLogger := handler.loggerMongo.LogError(context, errorCreate)
+		errorLogger := handler.LoggerMongo.LogError(context, errorCreate)
 		if errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		ErrorBinding(context)
 		return
 	}
-	token, err := handler.service.SignInUser(*input)
+	token, err := handler.UserService.SignInUser(*input)
 	if err != nil {
 		errorSignIn := fmt.Errorf("sign-in error : %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorSignIn); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorSignIn); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
 	context.JSON(http.StatusOK, token)
-	if err = handler.loggerMongo.LogInfo(context); err != nil {
+	if err = handler.LoggerMongo.LogInfo(context); err != nil {
 		logrus.Error("error in logger : ", err)
 	}
 	logrus.Info("status code :", http.StatusOK, " user is authorized")
@@ -108,18 +108,18 @@ func (handler AuthHandlers) signOut(context *gin.Context) {
 	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 	requestProcessed.Inc()
 	requestSignOut.Inc()
-	token, err := middleware.GetToken(context)
+	token, err := handler.UserService.GetToken(context)
 	if err != nil {
 		errorSignOut := fmt.Errorf("sign-out error: %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorSignOut); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorSignOut); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
-	if err = handler.cache.SetValue(token, "true"); err != nil {
+	if err = handler.Cache.SetValue(token, "true"); err != nil {
 		errorSignOut := fmt.Errorf("sign-out error: %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorSignOut); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorSignOut); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)

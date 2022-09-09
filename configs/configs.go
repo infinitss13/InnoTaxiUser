@@ -48,7 +48,7 @@ func GetEnv(key, defaultValue string) string {
 	return value
 }
 
-func NewConfig() DBConfig {
+func NewDBConfig() DBConfig {
 	return DBConfig{
 		DBHost:     GetEnv("HOST_DB", "localhost"),
 		DBPort:     GetEnv("PORT_DB", "5436"),

@@ -11,6 +11,7 @@ import (
 )
 
 // @Summary Get Profile
+// @Security ApiKeyAuth
 // @Tags profile
 // @Description handler for get profile request, allows user to check his profile data(name,  phone number, email, rating)
 // @ID getprofile
@@ -27,23 +28,23 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 	tokenSigned, err := handler.getAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
 			logrus.Error("error in logger", errorLogger)
 		}
 		HandleError(err, context)
 		return
 	}
-	userData, err := handler.service.GetUserByToken(tokenSigned)
+	userData, err := handler.UserService.GetUserByToken(tokenSigned)
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
 	context.JSON(http.StatusOK, userData)
-	if err = handler.loggerMongo.LogInfo(context); err != nil {
+	if err = handler.LoggerMongo.LogInfo(context); err != nil {
 		logrus.Error("error in logger : ", err)
 	}
 	logrus.Info("status code :", http.StatusOK, " user get profile")
@@ -52,6 +53,7 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 }
 
 // @Summary Update Profile
+// @Security ApiKeyAuth
 // @Tags profile
 // @Description handler for get profile request, allows user to update data(name, phone number, email). You can change any field of this data, but you should input correct data"
 // @ID updateprofile
@@ -65,7 +67,7 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	update := new(entity.UpdateData)
 	if err := context.BindJSON(&update); err != nil {
 		errorCreate := fmt.Errorf("update profile error: %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorCreate); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorCreate); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger)
 		}
 		ErrorBinding(context)
@@ -75,17 +77,17 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	tokenSigned, err := handler.getAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("update profile error,%v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
 
-	err = handler.service.UpdateUserProfile(tokenSigned, update)
+	err = handler.UserService.UpdateUserProfile(tokenSigned, update)
 	if err != nil {
 		errorUpdate := fmt.Errorf("update profile error,%v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorUpdate); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorUpdate); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
@@ -93,18 +95,19 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, "User is successfully updated")
 	logrus.Info("status code :", http.StatusOK, " user updated profile")
-	if err = handler.cache.SetValue(tokenSigned, "true"); err != nil {
+	if err = handler.Cache.SetValue(tokenSigned, "true"); err != nil {
 		logrus.Error("error in cache db : ", err.Error())
-		if errorLogger := handler.loggerMongo.LogError(context, err); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, err); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 	}
-	if err = handler.loggerMongo.LogInfo(context); err != nil {
+	if err = handler.LoggerMongo.LogInfo(context); err != nil {
 		logrus.Error("error in logger : ", err)
 	}
 }
 
 // @Summary Delete Profile
+// @Security ApiKeyAuth
 // @Tags profile
 // @Description handler for delete profile request, allows user to delete his account(user's data will be available for registration for other users)
 // @ID deleteprofile
@@ -118,7 +121,7 @@ func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 	deleteData := new(entity.DeleteData)
 	if err := context.BindJSON(&deleteData); err != nil {
 		errorCreate := fmt.Errorf("delete profile error: %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorCreate); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorCreate); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		ErrorBinding(context)
@@ -127,16 +130,16 @@ func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 	tokenSigned, err := handler.getAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("delete profile error: %v", err)
-		if errorLogger := handler.loggerMongo.LogError(context, errorToken); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 		HandleError(err, context)
 		return
 	}
-	err = handler.service.DeleteProfile(tokenSigned, deleteData.Password)
+	err = handler.UserService.DeleteProfile(tokenSigned, deleteData.Password)
 	if err != nil {
 		errorToken := fmt.Errorf("delete profile error: %v", err)
-		errorLog := handler.loggerMongo.LogError(context, errorToken)
+		errorLog := handler.LoggerMongo.LogError(context, errorToken)
 		if errorLog != nil {
 			logrus.Info("error in logger : ", errorLog.Error())
 		}
@@ -145,13 +148,13 @@ func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, "User is successfully deleted")
 	logrus.Info("status code :", http.StatusOK, " user deleted profile")
-	if err = handler.cache.SetValue(tokenSigned, "true"); err != nil {
+	if err = handler.Cache.SetValue(tokenSigned, "true"); err != nil {
 		logrus.Error("error in cache db : ", err.Error())
-		if errorLogger := handler.loggerMongo.LogError(context, err); errorLogger != nil {
+		if errorLogger := handler.LoggerMongo.LogError(context, err); errorLogger != nil {
 			logrus.Error("error in logger : ", errorLogger.Error())
 		}
 	}
-	if err = handler.loggerMongo.LogInfo(context); err != nil {
+	if err = handler.LoggerMongo.LogInfo(context); err != nil {
 		logrus.Error("error in logger : ", err.Error())
 	}
 }

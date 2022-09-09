@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/api/order": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "handler for get order request, allows user to order the taxi",
                 "produces": [
                     "application/json"
@@ -54,6 +59,11 @@ const docTemplate = `{
         },
         "/api/profile": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "handler for get profile request, allows user to check his profile data(name,  phone number, email, rating)",
                 "produces": [
                     "application/json"
@@ -88,6 +98,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "handler for delete profile request, allows user to delete his account(user's data will be available for registration for other users)",
                 "consumes": [
                     "application/json"
@@ -125,6 +140,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "handler for get profile request, allows user to update data(name, phone number, email). You can change any field of this data, but you should input correct data\"",
                 "consumes": [
                     "application/json"
@@ -456,6 +476,13 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

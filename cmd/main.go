@@ -1,10 +1,15 @@
 package main
 
 import (
+	"context"
 	"github.com/infinitss13/innotaxiuser"
+	"github.com/infinitss13/innotaxiuser/cmd/cache"
+	"github.com/infinitss13/innotaxiuser/cmd/logger"
 	"github.com/infinitss13/innotaxiuser/configs"
+	"github.com/infinitss13/innotaxiuser/database"
 	_ "github.com/infinitss13/innotaxiuser/docs"
 	"github.com/infinitss13/innotaxiuser/handler"
+	"github.com/infinitss13/innotaxiuser/services"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
@@ -16,7 +21,7 @@ import (
 // @host localhost:8000
 // @BasePath /
 
-// @securityDefinition ApiKeyAuth
+// @securityDefinitions.apiKey ApiKeyAuth
 // @in header
 // @name Authorization
 func main() {
@@ -28,7 +33,26 @@ func main() {
 
 	port := serverConfig.SetTCPPort()
 	server := new(innotaxiuser.Server)
-	handlers, err := handler.SetRequestHandlers()
+
+	ctx := context.Background()
+
+	mongoDBClient, err := logger.NewClientMongo(ctx)
+	if err != nil {
+		logrus.Errorf("error in connection mongo : %v", err)
+	}
+	log := logger.NewLogger(mongoDBClient)
+
+	db, err := database.NewDataBase(configs.NewDBConfig())
+	if err != nil {
+		logrus.Errorf("error in connection postgres : %v", err)
+	}
+	srv := services.NewService(db)
+
+	cacheRedis, err := cache.NewRedisCache()
+	if err != nil {
+		logrus.Errorf("error in connection cache : %v", err)
+	}
+	handlers, err := handler.SetRequestHandlers(log, srv, cacheRedis)
 	if err != nil {
 		logrus.Errorf("error setting http handlers %v", err)
 		return
@@ -38,4 +62,5 @@ func main() {
 		logrus.Error(err)
 		return
 	}
+
 }

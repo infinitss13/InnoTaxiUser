@@ -3,12 +3,12 @@ package logger
 import (
 	"context"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -16,11 +16,34 @@ import (
 type LoggerMongo struct {
 	collection *mongo.Collection
 }
+type Logger interface {
+	LogError(ctx *gin.Context, err error) error
+	LogInfo(ctx *gin.Context) error
+}
 
 func NewLogger(database *mongo.Database) LoggerMongo {
 	return LoggerMongo{
 		collection: database.Collection(configs.NewConnectionMongo().MongoCollection),
 	}
+}
+
+func NewClientMongo(ctx context.Context) (db *mongo.Database, err error) {
+	var mongoDBURL string
+	newConnection := configs.NewConnectionMongo()
+
+	mongoDBURL = fmt.Sprintf("mongodb://%s:%s", newConnection.MongoHost, newConnection.MongoPort)
+	clientOptions := options.Client().ApplyURI(mongoDBURL)
+
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		return nil, err
+	}
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.Database(newConnection.MongoDBName), nil
 }
 
 func (d LoggerMongo) LogError(ctx *gin.Context, err error) error {
@@ -75,23 +98,4 @@ func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 		return err
 	}
 	return nil
-}
-
-func NewClientMongo() (db *mongo.Database, err error) {
-	var mongoDBURL string
-	newConnection := configs.NewConnectionMongo()
-
-	mongoDBURL = fmt.Sprintf("mongodb://%s:%s", newConnection.MongoHost, newConnection.MongoPort)
-	clientOptions := options.Client().ApplyURI(mongoDBURL)
-
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		return nil, err
-	}
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.Database(newConnection.MongoDBName), nil
 }

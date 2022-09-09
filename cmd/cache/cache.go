@@ -9,21 +9,26 @@ import (
 
 var UserSignedOut = errors.New("user have signed-out")
 
-type RedisCash struct {
+type RedisCache struct {
 	Client     *redis.Client
 	Connection configs.ConnectionRedis
 }
 
-func NewRedisCash() (RedisCash, error) {
+type Cache interface {
+	SetValue(key string, value string) error
+	GetValue(key string) (bool, error)
+}
+
+func NewRedisCache() (RedisCache, error) {
 	cl, err := NewClientRedis()
 	if err != nil {
-		return RedisCash{}, err
+		return RedisCache{}, err
 	}
 	connect, err := configs.NewConnectionRedis()
 	if err != nil {
-		return RedisCash{}, err
+		return RedisCache{}, err
 	}
-	return RedisCash{
+	return RedisCache{
 		Client:     cl,
 		Connection: connect,
 	}, nil
@@ -41,7 +46,7 @@ func NewClientRedis() (*redis.Client, error) {
 	}), nil
 }
 
-func (cash *RedisCash) SetValue(key string, value string) error {
+func (cash RedisCache) SetValue(key string, value string) error {
 	status := cash.Client.Set(key, value, cash.Connection.RedisExpires)
 	if status.Err() != nil {
 		return status.Err()
@@ -49,7 +54,7 @@ func (cash *RedisCash) SetValue(key string, value string) error {
 	return nil
 }
 
-func (cash *RedisCash) GetValue(key string) (bool, error) {
+func (cash RedisCache) GetValue(key string) (bool, error) {
 	err := cash.Client.Get(key)
 	if err.Err() == redis.Nil {
 		return false, UserSignedOut
