@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	_ "github.com/golang/mock/mockgen/model"
 	"github.com/infinitss13/innotaxiuser/configs"
 	"github.com/infinitss13/innotaxiuser/database"
 	"github.com/infinitss13/innotaxiuser/entity"

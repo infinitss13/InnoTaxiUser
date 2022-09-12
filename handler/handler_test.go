@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/infinitss13/innotaxiuser/entity"
@@ -85,21 +84,25 @@ func TestHandler_getProfile(t *testing.T) {
 			name:                 "OK",
 			headerName:           "Authorization",
 			headerValue:          "Bearer ",
-			token:                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQyNDExMDZ9.GV4-JCHNYqIP8wVUsxK3wlqaLk62xzsgzRtA3sTXOJE",
+			token:                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQ1MDM3NzR9.8czPPLxHSJXJ9qBHZggjNOx6PlJr1dp6SQ6Vv7h-XvU",
 			expectedStatusCode:   http.StatusOK,
 			expectedResponseBody: "hello",
 		},
 	}
-
-	service.EXPECT().GetToken(context.Context()).Return(tests[0].token, nil)
-	service.EXPECT().GetUserByToken(tests[0].token).Return(userInfo, nil)
+	w := httptest.NewRecorder()
 	r := gin.New()
 	r.GET("/api/profile", handler.getProfile)
-	w := httptest.NewRecorder()
+
+	cache.EXPECT().GetValue(tests[0].token).Return(false, nil)
+	service.EXPECT().GetToken(gomock.Any()).Return(tests[0].token, nil)
+	service.EXPECT().GetUserByToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQ1MDM3NzR9.8czPPLxHSJXJ9qBHZggjNOx6PlJr1dp6SQ6Vv7h-XvU").Return(userInfo, nil)
+	responseBody := `{"Name":"polina","Phone":"+375443472342","Email":"polina@gmail.com","Rating":0}`
 	req := httptest.NewRequest("GET", "/api/profile", nil)
-	req.Header.Set(tests[0].headerName, tests[0].headerValue+tests[0].token)
+
 	r.ServeHTTP(w, req)
 	t.Log(w.Body)
+	t.Log(responseBody)
+	assert.Equal(t, w.Body.String(), responseBody)
 	assert.Equal(t, w.Code, http.StatusOK)
 
 }

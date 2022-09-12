@@ -65,7 +65,7 @@ func SetRequestHandlers(log logger.Logger, srv services.UserService, cache cache
 	return router, nil
 }
 
-func (handler AuthHandlers) getAndCheckToken(context *gin.Context) (string, error) {
+func (handler AuthHandlers) GetAndCheckToken(context *gin.Context) (string, error) {
 	tokenSigned, err := handler.UserService.GetToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("get rating error : %v", err)

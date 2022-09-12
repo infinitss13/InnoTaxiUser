@@ -25,7 +25,7 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 	requestProcessed.Inc()
 	timer := prometheus.NewTimer(httpDuration.WithLabelValues(context.Request.RequestURI))
 
-	tokenSigned, err := handler.getAndCheckToken(context)
+	tokenSigned, err := handler.GetAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
 		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
@@ -35,6 +35,8 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 		return
 	}
 	userData, err := handler.UserService.GetUserByToken(tokenSigned)
+	//_, err = handler.UserService.GetUserByToken(tokenSigned)
+
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)
 		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
@@ -74,7 +76,7 @@ func (handler AuthHandlers) updateProfile(context *gin.Context) {
 		return
 	}
 
-	tokenSigned, err := handler.getAndCheckToken(context)
+	tokenSigned, err := handler.GetAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("update profile error,%v", err)
 		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
@@ -127,7 +129,7 @@ func (handler AuthHandlers) deleteProfile(context *gin.Context) {
 		ErrorBinding(context)
 		return
 	}
-	tokenSigned, err := handler.getAndCheckToken(context)
+	tokenSigned, err := handler.GetAndCheckToken(context)
 	if err != nil {
 		errorToken := fmt.Errorf("delete profile error: %v", err)
 		if errorLogger := handler.LoggerMongo.LogError(context, errorToken); errorLogger != nil {
