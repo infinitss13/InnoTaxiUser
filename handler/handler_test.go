@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/infinitss13/innotaxiuser/entity"
@@ -59,50 +60,82 @@ func TestHandler_signUp(t *testing.T) {
 }
 
 func TestHandler_getProfile(t *testing.T) {
-	ctl := gomock.NewController(t)
-	defer ctl.Finish()
-	log := NewLoggerTest()
-	service := mock.NewMockUserService(ctl)
-	cache := mock.NewMockCache(ctl)
-	handler := NewAuthHandlers(log, service, cache)
-	userInfo := entity.ProfileData{
-		Name:   "polina",
-		Phone:  "+375443472342",
-		Email:  "polina@gmail.com",
-		Rating: 0,
-	}
-
+	type mockBehaviorService func(r *mock.MockUserService, token string, user entity.ProfileData)
+	type mockBehaviorCache func(c *mock.MockCache, token string)
 	tests := []struct {
 		name                 string
 		headerName           string
 		headerValue          string
 		token                string
+		userInfo             entity.ProfileData
+		mockBehaviorService  mockBehaviorService
+		mockBehaviorCache    mockBehaviorCache
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
-			name:                 "OK",
-			headerName:           "Authorization",
-			headerValue:          "Bearer ",
-			token:                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQ1MDM3NzR9.8czPPLxHSJXJ9qBHZggjNOx6PlJr1dp6SQ6Vv7h-XvU",
+			name:        "OK",
+			headerName:  "Authorization",
+			headerValue: "Bearer ",
+			userInfo: entity.ProfileData{
+				Name:   "polina",
+				Phone:  "+375443472342",
+				Email:  "polina@gmail.com",
+				Rating: 0,
+			},
+			mockBehaviorService: func(r *mock.MockUserService, token string, user entity.ProfileData) {
+				r.EXPECT().GetToken(gomock.Any()).Return(token, nil)
+				r.EXPECT().GetUserByToken(token).Return(user, nil)
+			},
+			mockBehaviorCache: func(c *mock.MockCache, token string) {
+				c.EXPECT().GetValue(token).Return(false, nil)
+			},
+			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQ1MDM3NzR9.8czPPLxHSJXJ9qBHZggjNOx6PlJr1dp6SQ6Vv7h-XvU",
+
 			expectedStatusCode:   http.StatusOK,
-			expectedResponseBody: "hello",
+			expectedResponseBody: `{"Name":"polina","Phone":"+375443472342","Email":"polina@gmail.com","Rating":0}`,
+		},
+		{
+			name: "No token",
+
+			userInfo: entity.ProfileData{},
+			mockBehaviorCache: func(c *mock.MockCache, token string) {
+
+			},
+			mockBehaviorService: func(r *mock.MockUserService, token string, user entity.ProfileData) {
+				r.EXPECT().GetToken(gomock.Any()).Return("", errors.New("no access token"))
+
+			},
+			headerName:           "Authorization",
+			headerValue:          "Bearer",
+			token:                "",
+			expectedStatusCode:   http.StatusInternalServerError,
+			expectedResponseBody: "\"no access token\"\"get rating error : no access token\"",
 		},
 	}
-	w := httptest.NewRecorder()
-	r := gin.New()
-	r.GET("/api/profile", handler.getProfile)
 
-	cache.EXPECT().GetValue(tests[0].token).Return(false, nil)
-	service.EXPECT().GetToken(gomock.Any()).Return(tests[0].token, nil)
-	service.EXPECT().GetUserByToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IiszNzU0NDM0NzIzNDIiLCJleHAiOjE2OTQ1MDM3NzR9.8czPPLxHSJXJ9qBHZggjNOx6PlJr1dp6SQ6Vv7h-XvU").Return(userInfo, nil)
-	responseBody := `{"Name":"polina","Phone":"+375443472342","Email":"polina@gmail.com","Rating":0}`
-	req := httptest.NewRequest("GET", "/api/profile", nil)
+	for _, v := range tests {
+		t.Run(v.name, func(t *testing.T) {
+			ctl := gomock.NewController(t)
+			defer ctl.Finish()
+			log := NewLoggerTest()
+			service := mock.NewMockUserService(ctl)
+			cache := mock.NewMockCache(ctl)
+			v.mockBehaviorService(service, v.token, v.userInfo)
+			v.mockBehaviorCache(cache, v.token)
+			handler := NewAuthHandlers(log, service, cache)
+			w := httptest.NewRecorder()
+			r := gin.New()
+			r.GET("/api/profile", handler.getProfile)
 
-	r.ServeHTTP(w, req)
-	t.Log(w.Body)
-	t.Log(responseBody)
-	assert.Equal(t, w.Body.String(), responseBody)
-	assert.Equal(t, w.Code, http.StatusOK)
+			req := httptest.NewRequest("GET", "/api/profile", nil)
+
+			r.ServeHTTP(w, req)
+			t.Log(w.Body.String())
+			assert.Equal(t, w.Body.String(), v.expectedResponseBody)
+			assert.Equal(t, w.Code, v.expectedStatusCode)
+		})
+
+	}
 
 }
