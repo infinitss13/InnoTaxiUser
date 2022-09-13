@@ -1,11 +1,8 @@
-FROM golang
+FROM golang:alpine
 
-WORKDIR /InnoTaxiUser
 COPY ./ ./
-
-RUN go build -o /docker-gs-ping
-
-CMD [ "/docker-gs-ping" ]
-
+WORKDIR /cmd
+RUN go build -o main .
+CMD ["./main"]
 
 
