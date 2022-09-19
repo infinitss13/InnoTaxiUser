@@ -43,22 +43,13 @@ services:
     networks:
       - internal
 
-
-#  migrate:
-#    image: migrate/migrate
-#    volumes:
-#      - /schema:/schema
-##    command: ["-path", "/schema", "-database", "postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable", "up", "3"]
-#    command: ["-path", "./schema", "-database", "postgres://postgres:qwerty@postgres:5432/postgres?sslmode=disable", "up"]
-#    depends_on:
-#      - postgres
-##  prometheus:
+#  prometheus:
 #    image: prom/prometheus:latest
 #    volumes:
 #      - /etc/prometheus:/etc/prometheus
-##    command:
-##      - '--config.file=/etc/prometheus/prometheus.yml'
-##      - '--storage.tsdb.path=/prometheus'
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
 #    ports:
 #      - '9090:9090'
 #  grafana:
@@ -67,5 +58,3 @@ services:
 #      - 3000:3000
 #    depends_on:
 #      - prometheus
-#  taxi:
-#    build: .
