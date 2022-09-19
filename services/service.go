@@ -31,11 +31,38 @@ type UserService interface {
 }
 
 type Service struct {
-	Db *database.DataBase
+	Db database.DataBase
 }
 
-func NewService(db *database.DataBase) Service {
+func NewService(db database.DataBase) Service {
 	return Service{Db: db}
+}
+
+func (srv Service) GetToken(context *gin.Context) (string, error) {
+	tokenString := context.GetHeader("Authorization")
+	if tokenString == "" {
+		context.JSON(401, gin.H{"error": "request does not contain an access token"})
+		context.Abort()
+		return "", errors.New("no access token")
+	}
+	splitedToken := strings.Split(tokenString, " ")
+	return splitedToken[1], nil
+}
+
+func (srv Service) Auth() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		splitedToken, err := srv.GetToken(context)
+		if err != nil {
+			logrus.Error(err)
+			context.JSON(http.StatusInternalServerError, err)
+		}
+		_, err = srv.VerifyToken(splitedToken)
+		//_, err = services.VerifyToken(splitedToken)
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
+			return
+		}
+	}
 }
 
 func (srv Service) CreateUser(user entity.User) error {
@@ -190,31 +217,4 @@ func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
 	}
 	signInData.Phone = claims.Phone
 	return signInData, nil
-}
-
-func (srv Service) GetToken(context *gin.Context) (string, error) {
-	tokenString := context.GetHeader("Authorization")
-	if tokenString == "" {
-		context.JSON(401, gin.H{"error": "request does not contain an access token"})
-		context.Abort()
-		return "", errors.New("no access token")
-	}
-	splitedToken := strings.Split(tokenString, " ")
-	return splitedToken[1], nil
-}
-
-func (srv Service) Auth() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		splitedToken, err := srv.GetToken(context)
-		if err != nil {
-			logrus.Error(err)
-			context.JSON(http.StatusInternalServerError, err)
-		}
-		_, err = srv.VerifyToken(splitedToken)
-		//_, err = services.VerifyToken(splitedToken)
-		if err != nil {
-			context.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
-			return
-		}
-	}
 }

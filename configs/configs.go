@@ -50,8 +50,8 @@ func GetEnv(key, defaultValue string) string {
 
 func NewDBConfig() DBConfig {
 	return DBConfig{
-		DBHost:     GetEnv("HOST_DB", "localhost"),
-		DBPort:     GetEnv("PORT_DB", "5436"),
+		DBHost:     GetEnv("HOST_DB", "postgres"),
+		DBPort:     GetEnv("PORT_DB", "5432"),
 		DBUsername: GetEnv("USERNAME_DB", "postgres"),
 		DBName:     GetEnv("DBNAME_DB", "postgres"),
 		DBSslmode:  GetEnv("SSLMODE_DB", "disable"),

@@ -1,6 +1,6 @@
 package database
 
-func (dataBase *DataBase) GetRatingByPhone(userPhone string) (float32, error) {
+func (dataBase DataBase) GetRatingByPhone(userPhone string) (float32, error) {
 	query := "SELECT rating from users WHERE phone=$1"
 	var rating float32
 	err := dataBase.db.Get(&rating, query, userPhone)

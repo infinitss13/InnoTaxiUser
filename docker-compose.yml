@@ -4,23 +4,46 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
 
+networks:
+  internal:
 
 services:
-#  postgres:
-#    image: postgres
-#    environment:
-#      POSTGRES_PASSWORD: 'qwerty'
-#    ports:
-#      - '5436:5436'
+  postgres:
+    container_name: 'postgres'
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: 'qwerty'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_DB: 'postgres'
+    ports:
+      - '5432:5432'
+    networks:
+      - internal
   monkedb:
+    networks:
+      - internal
     image: 'mongo:4.4.6'
     container_name: 'monke'
     ports:
       - '27017:27017'
   redis:
+    networks:
+      - internal
     image: redis
     ports:
       - '6379:6379'
+  innotaxi:
+    ports:
+      - '8000:8000'
+    build : .
+    env_file:
+      - ./.env
+    links:
+      - "postgres:postgres"
+    networks:
+      - internal
+
+
 #  migrate:
 #    image: migrate/migrate
 #    volumes:

@@ -9,16 +9,16 @@ type DataBase struct {
 	db *sqlx.DB
 }
 
-func NewDataBase(config configs.DBConfig) (*DataBase, error) {
+func NewDataBase(config configs.DBConfig) (DataBase, error) {
 	dataBase, err := sqlx.Open("postgres", config.ConnectionDbData())
 	if err != nil {
-		return nil, err
+		return DataBase{}, err
 	}
 	err = dataBase.Ping()
 	if err != nil {
-		return nil, err
+		return DataBase{}, err
 	}
-	return &DataBase{
+	return DataBase{
 		db: dataBase,
 	}, nil
 }

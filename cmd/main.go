@@ -25,7 +25,7 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	logrus.Info("Starting application")
+	logrus.Info("Starting  XUINYA VASH DOCKER application")
 	if err := godotenv.Load(); err != nil {
 		logrus.Errorf("error in loading env file : %v", err)
 	}

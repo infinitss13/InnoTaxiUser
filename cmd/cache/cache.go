@@ -14,11 +14,6 @@ type RedisCache struct {
 	Connection configs.ConnectionRedis
 }
 
-type Cache interface {
-	SetValue(key string, value string) error
-	GetValue(key string) (bool, error)
-}
-
 func NewRedisCache() (RedisCache, error) {
 	cl, err := NewClientRedis()
 	if err != nil {
@@ -32,6 +27,11 @@ func NewRedisCache() (RedisCache, error) {
 		Client:     cl,
 		Connection: connect,
 	}, nil
+}
+
+type Cache interface {
+	SetValue(key string, value string) error
+	GetValue(key string) (bool, error)
 }
 
 func NewClientRedis() (*redis.Client, error) {
@@ -57,8 +57,8 @@ func (cash RedisCache) SetValue(key string, value string) error {
 func (cash RedisCache) GetValue(key string) (bool, error) {
 	err := cash.Client.Get(key)
 	if err.Err() == redis.Nil {
-		return false, UserSignedOut
+		return true, UserSignedOut
 	} else {
-		return true, nil
+		return false, nil
 	}
 }

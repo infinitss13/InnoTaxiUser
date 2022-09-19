@@ -16,15 +16,16 @@ import (
 type LoggerMongo struct {
 	collection *mongo.Collection
 }
-type Logger interface {
-	LogError(ctx *gin.Context, err error) error
-	LogInfo(ctx *gin.Context) error
-}
 
 func NewLogger(database *mongo.Database) LoggerMongo {
 	return LoggerMongo{
 		collection: database.Collection(configs.NewConnectionMongo().MongoCollection),
 	}
+}
+
+type Logger interface {
+	LogError(ctx *gin.Context, err error) error
+	LogInfo(ctx *gin.Context) error
 }
 
 func NewClientMongo(ctx context.Context) (db *mongo.Database, err error) {
@@ -77,7 +78,7 @@ func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 	timeNow.Format(time.RFC3339)
 	doc := bson.D{
 		primitive.E{
-			Key: "loglevel", Value: "ERROR",
+			Key: "loglevel", Value: "INFO",
 		},
 		primitive.E{
 			Key:   "requestType",
