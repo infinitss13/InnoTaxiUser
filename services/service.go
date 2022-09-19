@@ -202,12 +202,10 @@ func CreateToken(phone string) (string, error) {
 
 func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
 	signInData := entity.InputSignIn{}
-	//token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
-	//	return []byte(os.Getenv("ACCESS_KEY")), nil
-	//})
 	token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("dhsagfjhaksehfiabdcdhsafhkasdf"), nil
+		return []byte(os.Getenv("ACCESS_KEY")), nil
 	})
+
 	if err != nil {
 		return signInData, errors.New("Error parsing claims")
 	}
