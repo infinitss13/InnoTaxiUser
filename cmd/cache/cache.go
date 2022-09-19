@@ -58,7 +58,6 @@ func (cash RedisCache) GetValue(key string) (bool, error) {
 	err := cash.Client.Get(key)
 	if err.Err() == redis.Nil {
 		return true, UserSignedOut
-	} else {
-		return false, nil
 	}
+	return false, nil
 }

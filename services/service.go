@@ -41,8 +41,6 @@ func NewService(db database.DataBase) Service {
 func (srv Service) GetToken(context *gin.Context) (string, error) {
 	tokenString := context.GetHeader("Authorization")
 	if tokenString == "" {
-		context.JSON(401, gin.H{"error": "request does not contain an access token"})
-		context.Abort()
 		return "", errors.New("no access token")
 	}
 	splitedToken := strings.Split(tokenString, " ")
@@ -52,7 +50,7 @@ func (srv Service) GetToken(context *gin.Context) (string, error) {
 func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
 	signInData := entity.InputSignIn{}
 	token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("ACCESS_KEY")), nil
+		return []byte(configs.GetEnv("ACCESS_KEY", "qwerterjbsdfjvhhbadsfsadfdsf")), nil
 	})
 
 	if err != nil {
@@ -146,7 +144,7 @@ func (srv Service) UpdateUserProfile(tokenSigned string, data *entity.UpdateData
 	if err != nil {
 		return err
 	}
-	isCorrect, _ := srv.Db.CheckUpdateData(claims.Phone, data)
+	isCorrect, _ := srv.Db.CheckUpdateDataAlreadyTaken(claims.Phone, data)
 	if !isCorrect {
 		return database.UpdateDataError
 	}

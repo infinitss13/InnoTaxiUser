@@ -72,7 +72,7 @@ func NewConnectionRedis() (ConnectionRedis, error) {
 		return ConnectionRedis{}, err
 	}
 	timeExpires := time.Duration(timeInt) * time.Minute
-	//TODO : realize getting time from env file
+
 	return ConnectionRedis{
 		RedisHost:    GetEnv("HOST_REDIS", "127.0.0.1:6379"),
 		RedisDB:      DBNumber,

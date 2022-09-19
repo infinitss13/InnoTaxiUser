@@ -35,7 +35,6 @@ func (handler AuthHandlers) getProfile(context *gin.Context) {
 		return
 	}
 	userData, err := handler.UserService.GetUserByToken(tokenSigned)
-	//_, err = handler.UserService.GetUserByToken(tokenSigned)
 
 	if err != nil {
 		errorToken := fmt.Errorf("profile error,%v", err)

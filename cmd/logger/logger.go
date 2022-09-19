@@ -67,11 +67,7 @@ func (d LoggerMongo) LogError(ctx *gin.Context, err error) error {
 		},
 	}
 	_, err = d.collection.InsertOne(context.TODO(), doc)
-	if err != nil {
-
-		return err
-	}
-	return nil
+	return err
 }
 func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 	timeNow := time.Now()
@@ -94,9 +90,5 @@ func (d LoggerMongo) LogInfo(ctx *gin.Context) error {
 	}
 
 	_, err := d.collection.InsertOne(context.TODO(), doc)
-	if err != nil {
-
-		return err
-	}
-	return nil
+	return err
 }
