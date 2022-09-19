@@ -82,5 +82,5 @@ func rateTrip(context *gin.Context) {
 		ErrorBinding(context)
 		return
 	}
-	// TODO : ere will me method that address to order service`s database and insert rating to the last trip of user, if time is not expired
+	// TODO : here will me method that address to order service`s database and insert rating to the last trip of user, if time is not expired
 }

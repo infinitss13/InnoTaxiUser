@@ -2,12 +2,19 @@ package configs
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
+
+func GetEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		value = defaultValue
+	}
+	return value
+}
 
 type DBConfig struct {
 	DBHost     string
@@ -16,36 +23,6 @@ type DBConfig struct {
 	DBName     string
 	DBSslmode  string
 	DBPassword string
-}
-
-type ConnectionMongo struct {
-	MongoHost       string
-	MongoPort       string
-	MongoDBName     string
-	MongoCollection string
-}
-
-type ConnectionRedis struct {
-	RedisHost    string
-	RedisDB      int
-	RedisExpires time.Duration
-}
-
-type ServerConfig struct {
-	tcpPort string
-}
-
-func NewServerConfig() *ServerConfig {
-	return &ServerConfig{
-		tcpPort: os.Getenv("PORT"),
-	}
-}
-func GetEnv(key, defaultValue string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		value = defaultValue
-	}
-	return value
 }
 
 func NewDBConfig() DBConfig {
@@ -58,6 +35,17 @@ func NewDBConfig() DBConfig {
 		DBPassword: GetEnv("PASSWORD_DB", "qwerty"),
 	}
 }
+func (c *DBConfig) ConnectionDbData() string {
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
+}
+
+type ConnectionMongo struct {
+	MongoHost       string
+	MongoPort       string
+	MongoDBName     string
+	MongoCollection string
+}
 
 func NewConnectionMongo() ConnectionMongo {
 	return ConnectionMongo{
@@ -66,6 +54,12 @@ func NewConnectionMongo() ConnectionMongo {
 		MongoDBName:     GetEnv("DBNAME_MONGO", "projectdb"),
 		MongoCollection: GetEnv("COLLECTION_MONGO", "logging"),
 	}
+}
+
+type ConnectionRedis struct {
+	RedisHost    string
+	RedisDB      int
+	RedisExpires time.Duration
 }
 
 func NewConnectionRedis() (ConnectionRedis, error) {
@@ -86,9 +80,14 @@ func NewConnectionRedis() (ConnectionRedis, error) {
 	}, nil
 }
 
-func (c *DBConfig) ConnectionDbData() string {
-	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		c.DBHost, c.DBPort, c.DBUsername, c.DBName, c.DBPassword, c.DBSslmode)
+type ServerConfig struct {
+	tcpPort string
+}
+
+func NewServerConfig() *ServerConfig {
+	return &ServerConfig{
+		tcpPort: os.Getenv("PORT"),
+	}
 }
 
 func (c *ServerConfig) SetTCPPort() string {

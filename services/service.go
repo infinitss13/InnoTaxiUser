@@ -49,6 +49,23 @@ func (srv Service) GetToken(context *gin.Context) (string, error) {
 	return splitedToken[1], nil
 }
 
+func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
+	signInData := entity.InputSignIn{}
+	token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("ACCESS_KEY")), nil
+	})
+
+	if err != nil {
+		return signInData, errors.New("Error parsing claims")
+	}
+	claims := token.Claims.(*JWTClaim)
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		return signInData, errors.New("token expired")
+	}
+	signInData.Phone = claims.Phone
+	return signInData, nil
+}
+
 func (srv Service) Auth() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		splitedToken, err := srv.GetToken(context)
@@ -198,21 +215,4 @@ func CreateToken(phone string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
-}
-
-func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
-	signInData := entity.InputSignIn{}
-	token, err := jwt.ParseWithClaims(tokenSigned, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("ACCESS_KEY")), nil
-	})
-
-	if err != nil {
-		return signInData, errors.New("Error parsing claims")
-	}
-	claims := token.Claims.(*JWTClaim)
-	if claims.ExpiresAt < time.Now().Local().Unix() {
-		return signInData, errors.New("token expired")
-	}
-	signInData.Phone = claims.Phone
-	return signInData, nil
 }
