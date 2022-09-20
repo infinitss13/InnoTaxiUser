@@ -66,13 +66,13 @@ func (srv Service) VerifyToken(tokenSigned string) (entity.InputSignIn, error) {
 
 func (srv Service) Auth() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		splitedToken, err := srv.GetToken(context)
+		splitToken, err := srv.GetToken(context)
 		if err != nil {
 			logrus.Error(err)
 			context.JSON(http.StatusInternalServerError, err)
 		}
-		_, err = srv.VerifyToken(splitedToken)
-		//_, err = services.VerifyToken(splitedToken)
+		_, err = srv.VerifyToken(splitToken)
+
 		if err != nil {
 			context.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
